@@ -1,0 +1,39 @@
+version: "3.2"
+networks:
+  netaxe-network:
+    name: "netaxe-network"
+services:
+# 前端
+  ipam-web:
+    image: registry.cn-hangzhou.aliyuncs.com/netaxe/ipam-web:1.0
+    build:
+      context: .
+      dockerfile: ./dockerfiles/web_dockerfile
+    ports:
+      - "9980:80"
+    networks:
+      - "netaxe-network"
+    restart: always
+
+  ipam_backend:
+    image: registry.cn-hangzhou.aliyuncs.com/netaxe/ipam-backend:02
+    container_name: ipam_backend
+    ports:
+      - "38005:18005"
+      - "35055:35055"
+    command: sh start.sh web
+    volumes:
+      - backend/IpamV1/conf.py:/home/ipam_backend/IpamV1/conf.py
+      - backend/logs:/home/ipam_backend/logs
+    networks:
+      - "netaxe-network"
+    
+  celery-ipam:
+    image: registry.cn-hangzhou.aliyuncs.com/netaxe/ipam-backend:02
+    container_name: celery-ipam
+    command: sh start.sh ipam
+    volumes:
+      - backend/IpamV1/conf.py:/home/ipam_backend/IpamV1/conf.py
+      - backend/logs:/home/ipam_backend/logs
+    networks:
+      - "netaxe-network"
