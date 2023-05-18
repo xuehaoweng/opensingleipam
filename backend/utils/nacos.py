@@ -1,7 +1,7 @@
 import json
-import urllib
+
 import logging
-import hashlib
+
 import threading
 import requests,time
 
