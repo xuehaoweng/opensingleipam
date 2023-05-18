@@ -1,0 +1,10 @@
+.idea/
+backend/IpamV1/conf.py
+backend/logs/
+backend/Python-3.9.11.tgz
+
+web/dist/
+web/node_modules/
+web/dist.zip
+web/dist/
+web/components.d.ts

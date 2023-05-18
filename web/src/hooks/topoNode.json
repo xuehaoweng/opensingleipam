@@ -1,0 +1,129 @@
+[
+  {
+    "id": 1,
+    "name": "用户",
+    "description": "user",
+    "positionX": 2,
+    "positionY": 2
+  },
+  {
+    "id": 2,
+    "name": "云",
+    "description": "cloud",
+    "positionX": 2,
+    "positionY": 4
+  },
+  {
+    "id": 3,
+    "name": "DNS",
+    "description": "dns",
+    "positionX": 3,
+    "positionY": 4
+  },
+  {
+    "id": 4,
+    "name": "四层交换机",
+    "description": "switch",
+    "state": "danger",
+    "positionX": 8,
+    "positionY": 4
+  },
+  {
+    "id": 5,
+    "name": "交换机",
+    "description": "switch",
+    "positionX": 2,
+    "positionY": 6
+  },
+  {
+    "id": 6,
+    "name": "交换机",
+    "description": "switch",
+    "positionX": 4,
+    "positionY": 6
+  },
+  {
+    "id": 7,
+    "name": "交换机",
+    "description": "switch",
+    "positionX": 6,
+    "positionY": 6
+  },
+  {
+    "id": 8,
+    "name": "交换机",
+    "description": "switch",
+    "positionX": 8,
+    "positionY": 6
+  },
+  {
+    "id": 9,
+    "name": "交换机",
+    "description": "switch",
+    "positionX": 10,
+    "positionY": 6
+  },
+  {
+    "id": 10,
+    "name": "交换机",
+    "description": "switch",
+    "positionX": 12,
+    "positionY": 6
+  },
+  {
+    "id": 11,
+    "name": "工作站",
+    "description": "OpenResty",
+    "positionX": 2,
+    "positionY": 8
+  },
+  {
+    "id": 12,
+    "name": "工作站",
+    "description": "OpenResty",
+    "positionX": 4,
+    "positionY": 8
+  },
+  {
+    "id": 13,
+    "name": "工作站",
+    "description": "OpenResty",
+    "positionX": 6,
+    "positionY": 8
+  },
+  {
+    "id": 14,
+    "name": "工作站",
+    "description": "OpenResty",
+    "positionX": 8,
+    "positionY": 8
+  },
+  {
+    "id": 15,
+    "name": "工作站",
+    "description": "OpenResty",
+    "positionX": 10,
+    "positionY": 8
+  },
+  {
+    "id": 16,
+    "name": "工作站",
+    "description": "OpenResty",
+    "positionX": 12,
+    "positionY": 8
+  },
+  {
+    "id": 17,
+    "name": "服务器",
+    "description": "gateway",
+    "positionX": 11,
+    "positionY": 4
+  },
+  {
+    "id": 18,
+    "name": "",
+    "description": "gateway",
+    "positionX": 11.5,
+    "positionY": 4
+  }
+]

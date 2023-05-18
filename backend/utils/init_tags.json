@@ -1,0 +1,58 @@
+{
+  "TagsModel": [
+    {
+      "id": "1",
+      "type": "空闲",
+      "show_tag": "1",
+      "bg_color": "#f59c99",
+      "fg_color": "#ffffff",
+      "compress": "No",
+      "locked": "Yes"
+    },
+    {
+      "id": "2",
+      "type": "已分配已使用",
+      "show_tag": "1",
+      "bg_color": "#e6b600",
+      "fg_color": "#ffffff",
+      "compress": "No",
+      "locked": "Yes"
+    },
+    {
+      "id": "3",
+      "type": "保留",
+      "show_tag": "1",
+      "bg_color": "#22dd22",
+      "fg_color": "#ffffff",
+      "compress": "No",
+      "locked": "Yes"
+    },
+    {
+      "id": "4",
+      "type": "未分配已使用",
+      "show_tag": "1",
+      "bg_color": "#1695c4",
+      "fg_color": "#ffffff",
+      "compress": "No",
+      "locked": "Yes"
+    },
+    {
+      "id": "6",
+      "type": "已分配未使用",
+      "show_tag": "1",
+      "bg_color": "#11eec2",
+      "fg_color": "#ffffff",
+      "compress": "Yes",
+      "locked": "No"
+    },
+    {
+      "id": "7",
+      "type": "自定义空闲",
+      "show_tag": "1",
+      "bg_color": "#f4f4f4",
+      "fg_color": "#ffffff",
+      "compress": "No",
+      "locked": "No"
+    }
+  ]
+}
