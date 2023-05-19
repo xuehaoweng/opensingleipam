@@ -1,5 +1,9 @@
 .idea/
 backend/IpamV1/conf.py
+backend/IpamV1/__pycache__/
+backend/users/__pycache__/
+backend/utils/__pycache__/
+backend/open_ipam/__pycache__/
 backend/logs/
 backend/Python-3.9.11.tgz
 

@@ -23,8 +23,8 @@ services:
       - "35055:35055"
     command: sh start.sh web
     volumes:
-      - backend/IpamV1/conf.py:/home/ipam_backend/IpamV1/conf.py
-      - backend/logs:/home/ipam_backend/logs
+      - /backend/IpamV1/conf.py:/home/ipam_backend/IpamV1/conf.py
+      - /backend/logs:/home/ipam_backend/logs
     networks:
       - "netaxe-network"
     
@@ -33,7 +33,7 @@ services:
     container_name: celery-ipam
     command: sh start.sh ipam
     volumes:
-      - backend/IpamV1/conf.py:/home/ipam_backend/IpamV1/conf.py
-      - backend/logs:/home/ipam_backend/logs
+      - /backend/IpamV1/conf.py:/home/ipam_backend/IpamV1/conf.py
+      - /backend/logs:/home/ipam_backend/logs
     networks:
       - "netaxe-network"
