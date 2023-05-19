@@ -15,9 +15,9 @@ services:
       - "netaxe-network"
     restart: always
 
-  micro-ipam_backend:
+  micro-ipam-backend:
     image: registry.cn-hangzhou.aliyuncs.com/netaxe/ipam-backend:02
-    container_name: micro-ipam_backend
+    container_name: micro-ipam-backend
     ports:
       - "38005:18005"
       - "38055:35055"
@@ -35,5 +35,13 @@ services:
     volumes:
       - ./backend/IpamV1/conf.py:/home/ipam_backend/IpamV1/conf.py
       - ./backend/logs:/home/ipam_backend/logs
+    networks:
+      - "netaxe-network"
+  micro-redis-cache:
+    image: registry.cn-hangzhou.aliyuncs.com/netaxe/redis:latest
+    container_name: micro-redis-cache
+    ports:
+      - "36379:6379"
+    command: "redis-server --requirepass dade0f2a65237a56b79277e6dd27351d2854df033e0ad4b4f90abec229cd64df"
     networks:
       - "netaxe-network"
