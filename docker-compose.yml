@@ -4,7 +4,7 @@ networks:
     driver: bridge
 services:
 # 前端
-  ipam-web:
+  micro-ipam-web:
     image: registry.cn-hangzhou.aliyuncs.com/netaxe/ipam-web:1.0
     build:
       context: .
@@ -15,9 +15,9 @@ services:
       - "netaxe-network"
     restart: always
 
-  ipam_backend:
+  micro-ipam_backend:
     image: registry.cn-hangzhou.aliyuncs.com/netaxe/ipam-backend:02
-    container_name: ipam_backend
+    container_name: micro-ipam_backend
     ports:
       - "38005:18005"
       - "35055:35055"
@@ -28,9 +28,9 @@ services:
     networks:
       - "netaxe-network"
     
-  celery-ipam:
+  micro-celery-ipam:
     image: registry.cn-hangzhou.aliyuncs.com/netaxe/ipam-backend:02
-    container_name: celery-ipam
+    container_name: micro-celery-ipam
     command: sh start.sh ipam
     volumes:
       - /backend/IpamV1/conf.py:/home/ipam_backend/IpamV1/conf.py
