@@ -16,7 +16,7 @@ services:
     restart: always
 
   micro-ipam-backend:
-    image: registry.cn-hangzhou.aliyuncs.com/netaxe/ipam-backend:05
+    image: registry.cn-hangzhou.aliyuncs.com/netaxe/ipam-backend:06
     container_name: micro-ipam-backend
     ports:
       - "38005:18005"
@@ -29,7 +29,7 @@ services:
       - "netaxe-network"
     
   micro-celery-ipam:
-    image: registry.cn-hangzhou.aliyuncs.com/netaxe/ipam-backend:05
+    image: registry.cn-hangzhou.aliyuncs.com/netaxe/ipam-backend:06
     container_name: micro-celery-ipam
     command: sh start.sh ipam
     volumes:
