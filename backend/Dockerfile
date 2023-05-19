@@ -78,6 +78,9 @@ ENV LC_ALL zh_CN.UTF-8
 
 
 COPY . /home/ipam_backend
+# 删除Python包
+RUN set -ex \
+    && rm -rf /home/ipam_backend/Python-3.9.11*
 # 再次切换工作目录为Django主目录
 WORKDIR /home/ipam_backend
 
