@@ -1,7 +1,7 @@
 version: "3.2"
 networks:
   netaxe-network:
-    dirver: bridge
+    driver: bridge
 services:
 # 前端
   ipam-web:
