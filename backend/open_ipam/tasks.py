@@ -12,7 +12,7 @@ from datetime import datetime, timedelta, date
 from celery import shared_task, current_app
 
 from IpamV1 import settings
-from IpamV1.celery import IpAmTask
+from celery_once import QueueOnce
 from open_ipam.models import IpAddress, Subnet
 from open_ipam.tools.phpipam import PhpIpamApi
 
@@ -38,7 +38,7 @@ def write_log(filename, datas):
     logger.info('Write Log Done!')
 
 # 获取所有任务task
-@shared_task(base=IpAmTask, once={'graceful': True})
+@shared_task(base=QueueOnce, once={'graceful': True})
 def get_tasks():
     celery_app = current_app
     # celery_tasks = [task for task in celery_app.tasks if not task.startswith('celery.')]
@@ -47,13 +47,13 @@ def get_tasks():
     return json.dumps({'result': res})
 
 
-@shared_task(base=IpAmTask, once={'graceful': True})
+@shared_task(base=QueueOnce, once={'graceful': True})
 def ipam_scan():
     pass
 
 
 # 数据同步-同步原有phpipam的IP地址数据
-@shared_task(base=IpAmTask, once={'graceful': True})
+@shared_task(base=QueueOnce, once={'graceful': True})
 def sync_ipam_ipaddress_main():
     task_start_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
     logger.info('同步PHPIPAM地址记录开始', task_start_time)
@@ -99,7 +99,7 @@ def create_ip_address(address):
 
 
 # 数据同步-同步原有phpipam的网段数据
-@shared_task(base=IpAmTask, once={'graceful': True})
+@shared_task(base=QueueOnce, once={'graceful': True})
 def sync_ipam_subnet_main():
     task_start_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
     logger.info('同步PHPIPAM网段记录开始', task_start_time)
@@ -157,7 +157,7 @@ def sync_ipam_subnet_main():
 
 
 # IPAM地址全网更新子任务
-@shared_task(base=IpAmTask, once={'graceful': True})
+@shared_task(base=QueueOnce, once={'graceful': True})
 async def ip_am_update_sub_task(ip):
     ip_address_model = IpAddress
     # 文件名-操作失败的IP地址写入文件中
@@ -257,7 +257,7 @@ async def ip_am_update_sub_task(ip):
 
 
 # IPAM地址全网更新主任务main
-@shared_task(base=IpAmTask, once={'graceful': True})
+@shared_task(base=QueueOnce, once={'graceful': True})
 async def ip_am_update_main():
     task_start_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
     start_time = time.time()
@@ -320,7 +320,7 @@ async def ip_am_update_main():
 
 
 # async+await异步模式
-@shared_task(base=IpAmTask, once={'graceful': True})
+@shared_task(base=QueueOnce, once={'graceful': True})
 def ipam_update_task():
     loop = asyncio.get_event_loop()
     loop.run_until_complete(ip_am_update_main())
@@ -335,7 +335,7 @@ def ipam_update_task():
 
 
 # 地址回收任务
-@shared_task(base=IpAmTask, once={'graceful': True})
+@shared_task(base=QueueOnce, once={'graceful': True})
 def recycle_ip_main():
     # 近一天未在线、三天不在线、10天不在线、30天不在线、60天不在线、90天不在线
     start_time = time.strftime('%Y-%m-%d-%H-%M-%S', time.localtime())
@@ -474,7 +474,7 @@ def recycle_ip_main():
 
 
 #  特定网段新增描述信息
-@shared_task(base=IpAmTask, once={'graceful': True})
+@shared_task(base=QueueOnce, once={'graceful': True})
 def descript_special_subnet_task():
     task_start_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
     logger.info('特定网段描述更新开始', task_start_time)

@@ -6,6 +6,7 @@ from django.apps import apps
 from django.utils import timezone
 from kombu import Queue, Exchange
 from celery import Celery, platforms, Task
+from celery_once import QueueOnce
 
 from IpamV1 import settings
 
@@ -14,11 +15,11 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'IpamV1.settings')
 
 app = Celery('IpamV1')
 app.conf.ONCE = {
-  'backend': 'celery_once.backends.Redis',
-  'settings': {
-    'url': settings.CELERY_ONCE_URL,
-    'default_timeout': 60 * 60
-  }
+    'backend': 'celery_once.backends.Redis',
+    'settings': {
+        'url': settings.CELERY_ONCE_URL,
+        'default_timeout': 60 * 60
+    }
 }
 app.now = timezone.now
 app.config_from_object('django.conf:settings', namespace='CELERY')
@@ -41,7 +42,7 @@ app.conf.task_queues = (
 app.autodiscover_tasks(lambda: [n.name for n in apps.get_app_configs()])
 
 
-class IpAmTask(Task):
+class IpAmTask(QueueOnce):
 
     def run(self, *args, **kwargs):
         pass
