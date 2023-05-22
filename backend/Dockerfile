@@ -22,15 +22,15 @@ WORKDIR /home/ipam_backend
 # 安装项目所需python第三方库
 # 指定setuptools的版本，必须指定，新版本有兼容问题
 RUN set -ex \
-    && /usr/local/python3/bin/pip3 install setuptools_scm -i https://mirrors.aliyun.com/pypi/simple/ \
-    && /usr/local/python3/bin/pip3 install --upgrade pip setuptools==45.2.0 -i https://mirrors.aliyun.com/pypi/simple/ \
-    &&/usr/local/python3/bin/pip3 install -r requirements.txt -i https://mirrors.aliyun.com/pypi/simple/ \
+    && pip install setuptools_scm -i https://mirrors.aliyun.com/pypi/simple/ \
+    && pip install --upgrade pip setuptools==45.2.0 -i https://mirrors.aliyun.com/pypi/simple/ \
+    && pip install -r requirements.txt -i https://mirrors.aliyun.com/pypi/simple/ \
     && rm -rf /var/cache/yum/*
 
 RUN set -ex \
- && echo -e "yes" | python3 manage.py collectstatic \
- && echo -e python3 manage.py makemigrations \
- && python3 manage.py migrate  --fake
+ && echo -e "yes" | python manage.py collectstatic \
+ && echo -e python manage.py makemigrations \
+ && python manage.py migrate  --fake
 #EXPOSE 8000
 EXPOSE 18005
 EXPOSE 35055
