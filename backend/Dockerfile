@@ -25,7 +25,7 @@ RUN set -ex \
     && rm -rf /var/cache/yum/*
 
 RUN set -ex \
- && echo -e "yes" | python manage.py collectstatic \
+ && python manage.py collectstatic --noinput \
  && python manage.py makemigrations \
  && python manage.py migrate  --fake
 #EXPOSE 8000
