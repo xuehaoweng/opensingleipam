@@ -9,24 +9,6 @@ RUN sed -i s@/deb.debian.org/@/mirrors.aliyun.com/@g /etc/apt/sources.list
 # 系统环境依赖配置
 # 目录设置
 WORKDIR /home/ipam_backend
-# 从gitlab仓库拉取
-RUN set -ex \
-    # 预安装所需组件
-    && yum install -y python-pip \
-    && yum install -y python-devel \
-    && yum install -y openldap-devel \
-    && yum install -y python36-devel \
-# 基础环境配置
-RUN set -ex \
-    # 修改系统时区为东八区
-    && rm -rf /etc/localtime \
-    && ln -s /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
-    && yum install -y vim \
-    # 安装定时任务组件
-    && yum -y install cronie\
-    && mkdir -p /home/ipam_backend
-# 支持中文
-RUN yum install kde-l10n-Chinese -y
 RUN localedef -c -f UTF-8 -i zh_CN zh_CN.utf8
 # 更新pip版本
 RUN pip3 install -i https://mirrors.aliyun.com/pypi/simple/ uwsgi --upgrade pip
