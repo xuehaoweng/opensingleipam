@@ -9,9 +9,6 @@ RUN sed -i s@/deb.debian.org/@/mirrors.aliyun.com/@g /etc/apt/sources.list
 # 系统环境依赖配置
 # 目录设置
 WORKDIR /home/ipam_backend
-# 更新pip版本
-RUN pip install -i https://mirrors.aliyun.com/pypi/simple/ uwsgi --upgrade pip
-
 
 COPY . /home/ipam_backend
 
