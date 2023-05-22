@@ -1,65 +1,21 @@
 ##############################################
-# 基于centos7构建python3运行环境
-# 进入容器：docker exec -it netops-private /bin/bash
+# 基于python:3.9.16-slim
+
+# 
 ##############################################
+FROM python:3.9.16-slim
+RUN sed -i s@/deb.debian.org/@/mirrors.aliyun.com/@g /etc/apt/sources.list
 
-FROM centos:centos7
-
-# 切换国内阿里YUM源镜像
-RUN set -ex \
-    && yum install -y wget \
-    && cp /etc/yum.repos.d/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo.bak \
-    && wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-7.repo \
-    && sed -i 's/gpgcheck=1/gpgcheck=0/g' /etc/yum.repos.d/CentOS-Base.repo \
-    && yum clean all \
-    && yum makecache \
-    && yum -y update \
-    && yum clean all
 # 系统环境依赖配置
 # 目录设置
 WORKDIR /home/ipam_backend
 # 从gitlab仓库拉取
-COPY Python-3.9.11.tgz  /home/ipam_backend
 RUN set -ex \
     # 预安装所需组件
-    && yum install -y epel-release tar libmysqlclient-dev supervisor libffi-devel zlib-devel bzip2-devel openssl-devel ncurses-devel \
-    sqlite-devel readline-devel tk-devel gcc make initscripts  \
-    && tar -zxvf Python-3.9.11.tgz \
-    && cd Python-3.9.11 \
-    && ./configure prefix=/usr/local/python3 \
-    && make \
-    && make install \
-    && make clean \
-    && rm -rf /home/ipam_backend/Python-3.9.11* \
     && yum install -y python-pip \
     && yum install -y python-devel \
     && yum install -y openldap-devel \
     && yum install -y python36-devel \
-    && yum install -y git
-# 设置默认为python3
-RUN set -ex \
-    # 备份旧版本python
-    && mv /usr/bin/python /usr/bin/python27 \
-    && mv /usr/bin/pip /usr/bin/pip-python2.7 \
-    # 配置默认为python3
-    && ln -sf /usr/local/python3/bin/python3.7 /usr/bin/python3 \
-    && ln -sf /usr/local/python3/bin/pip3 /usr/bin/pip3
-# 环境变量
-#ENV MYSQL_DATABASE_NAME netops_server
-# 系统环境变量$PATH追加pythn3 shell 为export PATH=$PATH:/usr/local/python3/bin
-ENV PATH /usr/local/python3/bin:$PATH
-# 设置默认python为python3
-RUN echo 'alias python="/usr/local/python3/bin/python3"' > /etc/profile.d/python.sh
-RUN source /etc/profile.d/python.sh
-
-
-# 修复因修改python版本导致yum失效问题
-RUN set -ex \
-    && sed -i "s#/usr/bin/python#/usr/bin/python2.7#" /usr/bin/yum \
-    && sed -i "s#/usr/bin/python#/usr/bin/python2.7#" /usr/libexec/urlgrabber-ext-down \
-    && yum install -y deltarpm
-
-
 # 基础环境配置
 RUN set -ex \
     # 修改系统时区为东八区
@@ -78,9 +34,7 @@ ENV LC_ALL zh_CN.UTF-8
 
 
 COPY . /home/ipam_backend
-# 删除Python包
-RUN set -ex \
-    && rm -rf /home/ipam_backend/Python-3.9.11*
+
 # 再次切换工作目录为Django主目录
 WORKDIR /home/ipam_backend
 
