@@ -857,10 +857,10 @@ export default defineComponent({
     }
 
     function get_new() {
-
+        // console.log(subnet_info)
       if (subnet_info.value['next_page_url']) {
-        console.log('到底了，请二次请求滚动加载最新')
-        console.log(subnet_info.value['next_page_url'])
+        // console.log('到底了，请二次请求滚动加载最新')
+        // console.log(subnet_info.value['next_page_url'])
         var start_ipaddress = subnet_info.value['next_page_url'].split('?start=')[1]
         request_next_status.value = true
         get({

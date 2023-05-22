@@ -24,7 +24,7 @@ from netaddr import IPNetwork, IPSet
 
 logger = logging.getLogger('ipam')
 
-
+# 写入记录日志
 def write_log(filename, datas):
     try:
         isExists = os.path.exists(os.path.dirname(filename))
@@ -37,7 +37,7 @@ def write_log(filename, datas):
             f.write(row)
     logger.info('Write Log Done!')
 
-
+# 获取所有任务task
 @shared_task(base=IpAmTask, once={'graceful': True})
 def get_tasks():
     celery_app = current_app
@@ -79,7 +79,7 @@ def sync_ipam_ipaddress_main():
     logger.info('花费总时间{}s'.format(total_time))
     logger.info('同步PHPIPAM地址记录结束', task_end_time)
 
-
+# 新建ip地址实例
 def create_ip_address(address):
     try:
         subnet_instance = Subnet.objects.filter(subnet_id=int(address['subnetId'])).first()
@@ -193,11 +193,12 @@ async def ip_am_update_sub_task(ip):
 
             """
             # 新增IP地址信息置位tag=4  未分配已使用
-            1、查询除log_time字段外，是否有完全匹配，如果有就只更新log_time字段, 如果log_time字段一致，则不进行任何操作
-            2、如果查询不到数据，则新增该字段
+            1、查询除log_time字段外,是否有完全匹配,如果有就只更新log_time字段, 如果log_time字段一致,则不进行任何操作
+            2、如果查询不到数据,则新增该字段
             """
             # TODO 到新增地址表
             IpamMongoOps.post_success_ip(ip)
+            # 新建该IP地址实例、绑定IP地址插入的归属网段ID
             ip_create_instance = IpAddress(subnet_id=subnet_insert_id, ip_address=ip, tag=4,
                                            description=json.dumps(tmp_description))
             ip_create_instance.save()
@@ -217,17 +218,16 @@ async def ip_am_update_sub_task(ip):
             _tmp_data.append(ip + '\n')
             write_log(ip_am_ip_fail_file, _tmp_data)
 
-    #  IP地址当前已经存在Netops-IPAM中
+    # IP地址当前已经存在Netops-IPAM中
     # 取值tag并更新tag
     # 更新在线时间
-    # 更新Bgbu
     # 更新描述信息 取消
     else:
         ip_address_id = ip_address_instance['id']
         ip_address_tag = ip_address_instance['tag']
         ip_address_desc = ip_address_instance.get('description', '{}')
-        if ip_address_tag == 6:  # 已分配未使用变更到已分配已使用、最近在线时间、描述信息、BgBu
-            # TODO 更新 6>> 2
+        if ip_address_tag == 6:  # 已分配未使用变更到 >>> 已分配已使用 update 最近在线时间、描述信息
+            # TODO 更新 6 >>> 2
             IpamMongoOps.post_update_ip(ip)
             ip_update_6_instance = IpAddress.objects.get(id=ip_address_id)
             ip_update_6_instance.tag = 2
@@ -235,8 +235,8 @@ async def ip_am_update_sub_task(ip):
             ip_update_6_instance.description = ip_address_desc if ip_address_desc else tmp_description
 
             ip_update_6_instance.save()
-        if ip_address_tag == 7:  # 自定义空闲变更到未分配已使用、最近在线时间、描述信息、BgBu
-            # TODO 更新 7>> 4
+        if ip_address_tag == 7:  # 自定义空闲变更到 >>> 未分配已使用、最近在线时间、描述信息
+            # TODO 更新 7 >>> 4
             IpamMongoOps.post_update_ip(ip)
             ip_update_7_instance = IpAddress.objects.get(id=ip_address_id)
             ip_update_7_instance.tag = 4
@@ -244,8 +244,8 @@ async def ip_am_update_sub_task(ip):
             ip_update_7_instance.description = tmp_description
 
             ip_update_7_instance.save()
-        else:  # 更新tag、最近在线时间、描述信息、BgBu
-            # TODO 更新 未使用-仅更新在线时间、描述信息、BGBU等
+        else:  # 更新tag、最近在线时间、描述信息
+            # TODO 更新 未使用-仅更新在线时间、描述信息
             IpamMongoOps.post_update_ip(ip)
             ip_update_else_instance = IpAddress.objects.get(id=ip_address_id)
             ip_update_else_instance.tag = ip_address_tag
@@ -261,7 +261,7 @@ async def ip_am_update_sub_task(ip):
 async def ip_am_update_main():
     task_start_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
     start_time = time.time()
-    logger.info("netaxe-IPAM信息更新开始")
+    logger.info("IPAM信息更新开始:{}".format(task_start_time))
     file_time = datetime.now().strftime("%Y-%m-%d")
     # 获取tasks任务数量
     ip_am_update_tasks = []
@@ -300,10 +300,11 @@ async def ip_am_update_main():
     ip_update_counts = IpamMongoOps.get_coll_account(coll='netops_ipam_update_ip')  # 更新地址表
 
     # 发送邮件和微信信息
-    send_message = 'netaxe-IPAM信息更新完成!\n新录入成功: {}个\n新录入失败: {}个\n更新成功: {}个\n总耗时: {}分钟\n'.format(
+    send_message = 'IPAM信息更新完成!\n新录入成功: {}个\n新录入失败: {}个\n更新成功: {}个\n总耗时: {}分钟\n'.format(
         ip_add_counts, ip_fail_counts, ip_update_counts, total_time)
-    email_addr = ['netaxe@netaxe.com']
-    email_subject = 'netaxe-IPAM信息更新结果_' + datetime.now().strftime("%Y-%m-%d %H:%M")
+    # 收件人邮箱
+    email_addr = settings.EMAIL_RECEIVE_USER
+    email_subject = 'IPAM信息更新结果_' + datetime.now().strftime("%Y-%m-%d %H:%M")
     email_text_content = send_message
     if os.path.exists(ip_am_ip_fail_file):
         send_mail(receive_email_addr=email_addr, email_subject=email_subject,
@@ -311,12 +312,9 @@ async def ip_am_update_main():
     else:
         send_mail(receive_email_addr=email_addr, email_subject=email_subject, email_text_content=email_text_content)
 
-    try:
-        # _wechat = weiChatApi()
-        task_end_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
-    except Exception as e:
-        pass
-    logger.info("发送微信、邮件完毕")
+    # 最后获取任务结束时间
+    task_end_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
+    logger.info("发送微信、邮件完毕:{}".format(task_end_time))
 
     return
 
@@ -341,7 +339,7 @@ def ipam_update_task():
 def recycle_ip_main():
     # 近一天未在线、三天不在线、10天不在线、30天不在线、60天不在线、90天不在线
     start_time = time.strftime('%Y-%m-%d-%H-%M-%S', time.localtime())
-    start_message = f"测试环境 netaxe-IPAM回收任务开始, 开始时间: {start_time} "
+    start_message = f"IPAM回收任务开始, 开始时间: {start_time} "
     logger.info(start_message)
     # 获取media文件夹路径
     media_path = pathlib.Path(settings.MEDIA_ROOT)
@@ -361,12 +359,12 @@ def recycle_ip_main():
         except Exception as ex:
             raise RuntimeError("创建IP地址回收的目录失败!", ex)
 
-        # 迭代目录内的xlsx文件数量,并按照文件创建的时间从高到低排序(先创建的文件在后面，后创建的文件在前面)
+        # 迭代目录内的xlsx文件数量,并按照文件创建的时间从高到低排序(先创建的文件在后面,后创建的文件在前面)
     excel_files = sorted([f for f in save_path.iterdir() if (str(f).endswith(".xlsx"))],
                          key=lambda x: os.path.getctime(x),
                          reverse=True, )
 
-    # 按照文件创建的时间从高到低排序(先创建的文件在后面，后创建的文件在前面)
+    # 按照文件创建的时间从高到低排序(先创建的文件在后面,后创建的文件在前面)
     # excel_files = [f for f in save_path.iterdir() if (str(f).endswith("xlsx"))]
     # excel_files.sort(key=lambda x: os.path.getctime(x), reverse=True)
 
@@ -449,7 +447,7 @@ def recycle_ip_main():
     offline_30_day_df.to_excel(excel_writer=writer, sheet_name="offline_30_day", index=True)
     offline_60_day_df.to_excel(excel_writer=writer, sheet_name="offline_60_day", index=True)
     offline_90_day_df.to_excel(excel_writer=writer, sheet_name="offline_90_day_df", index=True)
-    # 保存，生成文件
+    # 保存,生成文件
     writer.close()
     logger.info(f"{full_path} 保存成功!")
     # 最近在线时间为90天之前
@@ -458,13 +456,13 @@ def recycle_ip_main():
     # for recycle in recycle_ip_list:
     #     recycle.tag = 1
     end_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
-    end_message = f"测试环境 netaxe-IPAM回收任务结束, 结束时间: {end_time} "
+    end_message = f" IPAM回收任务结束, 结束时间: {end_time} "
     logger.info(end_message)
 
     # 发送邮件和微信信息
-    send_message = '测试环境 netaxe-IPAM回收完成!'
-    email_addr = ['netaxe@netaxe.com']
-    email_subject = '测试环境 netaxe-IPAM回收结果_' + datetime.now().strftime("%Y-%m-%d %H:%M")
+    send_message = ' IPAM回收完成!'
+    email_addr = settings.EMAIL_RECEIVE_USER
+    email_subject = ' IPAM回收结果_' + datetime.now().strftime("%Y-%m-%d %H:%M")
     email_text_content = send_message
     # if os.path.exists(save_path):
     send_mail(receive_email_addr=email_addr, email_subject=email_subject,

@@ -19,7 +19,7 @@ RUN set -ex \
 # 目录设置
 WORKDIR /home/ipam_backend
 # 从gitlab仓库拉取
-COPY Python-3.9.11.tgz  /home/ipam_backend
+COPY ./backend/Python-3.9.11.tgz  /home/ipam_backend
 RUN set -ex \
     # 预安装所需组件
     && yum install -y epel-release tar libmysqlclient-dev supervisor libffi-devel zlib-devel bzip2-devel openssl-devel ncurses-devel \
@@ -77,7 +77,7 @@ RUN pip3 install -i https://mirrors.aliyun.com/pypi/simple/ uwsgi --upgrade pip
 ENV LC_ALL zh_CN.UTF-8
 
 
-COPY . /home/ipam_backend
+COPY ./backend/. /home/ipam_backend
 # 删除Python包
 RUN set -ex \
     && rm -rf /home/ipam_backend/Python-3.9.11*

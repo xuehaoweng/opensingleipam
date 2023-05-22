@@ -43,7 +43,6 @@ class HostsResponse(object):
         self.description = description
 
 
-
 class HostsSet:
     # Needed for DjangoModelPermissions to check the right model
     model = Subnet
@@ -395,15 +394,28 @@ class IpAmHandelView(APIView):
                         res = {'message': '新增网段失败,请校验参数,不能新建跟父节点相同的子网段', 'code': 400, }
                         return JsonResponse(res, safe=True)
                     else:
+                        # 校验IPV6
+                        if ":" in str(master_subnet.subnet):
 
-                        master_subnet_detail = ipaddr.IPv4Network(str(master_subnet.subnet))
-                        add_subnet_detail = ipaddr.IPv4Network(str(str(add_subnet)))
-                        if add_subnet_detail in master_subnet_detail:
+                            v6_master_subnet_detail = ipaddr.IPv6Network(str(master_subnet.subnet))
+                            v6_add_subnet_detail = ipaddr.IPv6Network(str(str(add_subnet)))
+                            if v6_add_subnet_detail in v6_master_subnet_detail:
+                                if add_subnet in subnet_list:
+                                    res = {'message': '新增网段失败,当前新增网段已经存在', 'code': 400, }
+                                else:
+                                    Subnet.objects.update_or_create(**add_kwargs)
+                                    res = {'message': '新增网段成功', 'code': 200, }
+                                return JsonResponse(res, safe=True)
+                        # 校验IPV4
+                        v4_master_subnet_detail = ipaddr.IPv4Network(str(master_subnet.subnet))
+                        v4_add_subnet_detail = ipaddr.IPv4Network(str(str(add_subnet)))
+                        if v4_add_subnet_detail in v4_master_subnet_detail:
                             if add_subnet in subnet_list:
                                 res = {'message': '新增网段失败,当前新增网段已经存在', 'code': 400, }
                             else:
                                 Subnet.objects.update_or_create(**add_kwargs)
                                 res = {'message': '新增网段成功', 'code': 200, }
+
                         else:
                             res = {'message': '新增网段失败,请校验网段归属', 'code': 400, }
                         return JsonResponse(res, safe=True)
