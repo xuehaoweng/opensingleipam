@@ -26,7 +26,7 @@ RUN set -ex \
 
 RUN set -ex \
  && echo -e "yes" | python manage.py collectstatic \
- && echo -e python manage.py makemigrations \
+ && python manage.py makemigrations \
  && python manage.py migrate  --fake
 #EXPOSE 8000
 EXPOSE 18005
