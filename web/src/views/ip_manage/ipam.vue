@@ -239,6 +239,7 @@ import {
   reactive,
   ref,
   shallowReactive,
+  VNodeChild 
 } from 'vue'
 import { Pencil as CashIcon } from '@vicons/ionicons5'
 import {
@@ -511,7 +512,7 @@ export default defineComponent({
             key: 'lastOnlineTime',
             // width: '150px',
             render: (rowData) => {
-              return rowData['lastOnlineTime']
+              return rowData['lastOnlineTime'] as VNodeChild 
             },
           },
           // {

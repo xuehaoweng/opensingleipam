@@ -1,14 +1,15 @@
-FROM node:lts-alpine as build-stage
+FROM node:16.13.1 as build-stage
 WORKDIR /app
-COPY package*.json ./
+COPY ./package*.json ./
 RUN npm config set registry https://registry.npm.taobao.org
+RUN npm install -g npm@9.6.5
 RUN npm install --force
-COPY . .
+COPY ./ ./
 RUN npm run build
 
 # production stage
-FROM nginx:1.7.9 as production-stage
-COPY ipam_web_nginx.conf /etc/nginx/conf.d/default.conf
+FROM nginx:1.23.1 as production-stage
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=build-stage /app/dist /home
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
