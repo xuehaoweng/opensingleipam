@@ -9,10 +9,8 @@ RUN sed -i s@/deb.debian.org/@/mirrors.aliyun.com/@g /etc/apt/sources.list
 # 系统环境依赖配置
 # 目录设置
 WORKDIR /home/ipam_backend
-RUN localedef -c -f UTF-8 -i zh_CN zh_CN.utf8
 # 更新pip版本
 RUN pip3 install -i https://mirrors.aliyun.com/pypi/simple/ uwsgi --upgrade pip
-ENV LC_ALL zh_CN.UTF-8
 
 
 COPY . /home/ipam_backend
