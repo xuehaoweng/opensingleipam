@@ -11,7 +11,7 @@ django-celery-beat==1.5.0
 django-celery-results==1.0.4
 celery==4.2.1
 ipaddr==2.2.0
-flower==1.2.0
+flower==0.9.3
 reversion==0.2
 openwisp-users==1.0.2
 openwisp-utils==1.0.4
