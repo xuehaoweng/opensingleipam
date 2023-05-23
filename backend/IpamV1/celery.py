@@ -24,14 +24,14 @@ app.conf.ONCE = {
         'default_timeout': 60 * 60
     }
 }
-app.conf.beat_schedule = {
-    # Disable cleanup task by scheduling to run every ~1000 years
-    'backend_cleanup': {
-        'task': 'celery.backend_cleanup',
-        'schedule': timedelta(days=365*1000),
-        'relative': True,
-    },
-}
+# app.conf.beat_schedule = {
+#     # Disable cleanup task by scheduling to run every ~1000 years
+#     'backend_cleanup': {
+#         'task': 'celery.backend_cleanup',
+#         'schedule': timedelta(days=365*1000),
+#         'relative': True,
+#     },
+# }
 app.now = timezone.now
 app.config_from_object('django.conf:settings', namespace='CELERY')
 
