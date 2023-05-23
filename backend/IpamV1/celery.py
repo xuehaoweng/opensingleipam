@@ -49,7 +49,7 @@ app.conf.task_queues = (
     Queue('default', default_exchange, routing_key='default'),
     Queue('ipam', ipam_exchange, routing_key='ipam'),
 )
-app.backend.supports_autoexpire = True
+# app.backend.supports_autoexpire = True
 app.autodiscover_tasks(lambda: [n.name for n in apps.get_app_configs()])
 
 
