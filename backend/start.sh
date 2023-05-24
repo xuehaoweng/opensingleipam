@@ -2,9 +2,9 @@
 #pip3 install --upgrade pip -i https://mirrors.aliyun.com/pypi/simple/
 #pip3 install -r requirements.txt -i https://mirrors.aliyun.com/pypi/simple/
 
-echo -e "yes" | python3 manage.py collectstatic
-python3 manage.py makemigrations
-python3 manage.py migrate
+python manage.py collectstatic --noinput
+python manage.py makemigrations
+python manage.py migrate
 web(){
     mkdir -p /home/ipam_backend/logs/celery_logs
     mkdir -p /var/log/supervisor

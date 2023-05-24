@@ -12,7 +12,7 @@ export const constantRoutes = [
   },
   {
     path: '/',
-    redirect: '/index/home',
+    redirect: '/ip_manage/ipam',
     hidden: true,
   },
   {
@@ -47,54 +47,54 @@ export const constantRoutes = [
       },
     ],
   },
-  {
-    path: '/index',
-    component: Layout,
-    name: 'Index',
-    meta: {
-      title: 'Dashboard',
-      iconPrefix: 'iconfont',
-      icon: 'dashboard',
-    },
-    children: [
-      {
-        path: 'home',
-        name: 'Home',
-        component: (): any => import('@/views/ip_manage/ipam.vue'),
-        meta: {
-          title: '地址管理',
-          affix: true,
-          cacheable: true,
-          iconPrefix: 'iconfont',
-          icon: 'search',
-        },
-      },
-      {
-        path: 'task_list',
-        name: 'task_list',
-        component: (): any => import('@/views/task_center/task_list.vue'),
-        meta: {
-          title: '任务列表',
-          affix: true,
-          cacheable: true,
-          iconPrefix: 'iconfont',
-          icon: 'menu',
-        },
-      },
-      {
-        path: 'oplogs',
-        name: 'oplogs',
-        component: (): any => import('@/views/users/oplogs.vue'),
-        meta: {
-          title: '操作日志',
-          affix: true,
-          cacheable: true,
-          iconPrefix: 'iconfont',
-          icon: 'user',
-        },
-      },
-    ],
-  },
+  // {
+  //   path: '/index',
+  //   component: Layout,
+  //   name: 'Index',
+  //   meta: {
+  //     title: 'Dashboard',
+  //     iconPrefix: 'iconfont',
+  //     icon: 'dashboard',
+  //   },
+  //   children: [
+  //     {
+  //       path: 'home',
+  //       name: 'Home',
+  //       component: (): any => import('@/views/ip_manage/ipam.vue'),
+  //       meta: {
+  //         title: '地址管理',
+  //         affix: true,
+  //         cacheable: true,
+  //         iconPrefix: 'iconfont',
+  //         icon: 'search',
+  //       },
+  //     },
+  //     {
+  //       path: 'task_list',
+  //       name: 'task_list',
+  //       component: (): any => import('@/views/task_center/task_list.vue'),
+  //       meta: {
+  //         title: '任务列表',
+  //         affix: true,
+  //         cacheable: true,
+  //         iconPrefix: 'iconfont',
+  //         icon: 'menu',
+  //       },
+  //     },
+  //     {
+  //       path: 'oplogs',
+  //       name: 'oplogs',
+  //       component: (): any => import('@/views/users/oplogs.vue'),
+  //       meta: {
+  //         title: '操作日志',
+  //         affix: true,
+  //         cacheable: true,
+  //         iconPrefix: 'iconfont',
+  //         icon: 'user',
+  //       },
+  //     },
+  //   ],
+  // },
   
   {
     path: '/404',

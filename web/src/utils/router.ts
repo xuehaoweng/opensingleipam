@@ -50,12 +50,13 @@ function getRoutes() {
 
 function getComponent(it: OriginRoute) {
   return defineAsyncComponent({
-    loader: asynComponents['../views' + it.menuUrl + '.vue'],
+    loader: asynComponents['../views' + it.web_path + '.vue'],
     loadingComponent: LoadingComponent,
   })
 }
 
 function getCharCount(str: string, char: string) {
+  // console.log(str)
   const regex = new RegExp(char, 'g')
   const result = str.match(regex)
   const count = !result ? 0 : result.length
@@ -63,27 +64,30 @@ function getCharCount(str: string, char: string) {
 }
 
 function isMenu(path: string) {
-  return getCharCount(path, '/') === 1
+  return getCharCount(path, '\/') === 1
 }
 
-function getNameByUrl(menuUrl: string) {
-  const temp = menuUrl.split('/')
+function getNameByUrl(path: string) {
+  const temp = path.split('/')
   return toHump(temp[temp.length - 1])
 }
 
 function generatorRoutes(res: Array<OriginRoute>) {
   const tempRoutes: Array<RouteRecordRawWithHidden> = []
   res.forEach((it) => {
+    const path = it.link_path && isExternal(it.link_path) ? it.link_path : it.web_path
+    // console.log(it)
     const route: RouteRecordRawWithHidden = {
-      path: it.outLink && isExternal(it.outLink) ? it.outLink : it.menuUrl,
-      name: getNameByUrl(it.menuUrl),
+      path: path,
+      name: getNameByUrl(path),
       hidden: !!it.hidden,
-      component: isMenu(it.menuUrl) ? Layout : getComponent(it),
+      component: it.web_path && isMenu(it.web_path) ? Layout : getComponent(it),
+      
       meta: {
-        title: it.menuName,
+        title: it.name,
         affix: !!it.affix,
         cacheable: !!it.cacheable,
-        icon: it.icon || 'menu',
+        icon: it.meta.icon || 'menu',
         iconPrefix: it.iconPrefix || 'iconfont',
       },
     }
@@ -108,8 +112,18 @@ router.beforeEach(async (to) => {
     const isEmptyRoute = layoutStore.isEmptyPermissionRoute()
     if (isEmptyRoute) {
       const accessRoutes: Array<RouteRecordRaw> = []
-      const tempRoutes = await getRoutes()
-      accessRoutes.push(...tempRoutes)
+      let webRoutes: any = []
+        if (!import.meta.env.VITE_LOCAL_ROUTER) {
+          webRoutes = await getRoutes()
+        } else {
+          // console.log(defaultRouteJson.menu)
+          // 本地 rundev加载
+          webRoutes = generatorRoutes(defaultRouteJson.menu)
+          console.log('webRoutes', webRoutes)
+        }
+        
+      // const tempRoutes = await getRoutes()
+      accessRoutes.push(...webRoutes)
       const mapRoutes = mapTwoLevelRouter(accessRoutes)
       mapRoutes.forEach((it: any) => {
         router.addRoute(it)
