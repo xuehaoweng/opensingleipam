@@ -8,6 +8,7 @@ import { Layout } from '@/components'
 import layoutStore from '@/store'
 import { defineAsyncComponent } from 'vue'
 import LoadingComponent from '../components/loading/index.vue'
+import defaultRouteJson from '../../default_menu.json'
 import { ADMIN_WORK_USER_INFO_KEY, ADMIN_WORK_BUTTON_AUTH, ADMIN_WORK_S_TENANT } from '@/store/keys'
 const navigateID = localStorage.getItem(ADMIN_WORK_S_TENANT)
 interface OriginRoute {

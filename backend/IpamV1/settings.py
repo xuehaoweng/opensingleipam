@@ -53,14 +53,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    "django_celery_beat",
-    "django_celery_results.apps.CeleryResultConfig",
     "rest_framework",
     'rest_framework.authtoken',
     'import_export',
     'reversion',
     'open_ipam',
     'users',
+    'django_celery_results',
+    'django_celery_beat',
 ]
 # 取消验证-对接微服务
 REST_FRAMEWORK = {
@@ -329,16 +329,14 @@ CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
 CELERYD_CONCURRENCY = 40  # celery worker的并发数
 CELERY_MAX_TASKS_PER_CHILD = 20
-CELERYD_MAX_TASKS_PER_CHILD = 20
 # 这个表示每个工作的进程／线程／绿程 在执行 n 次任务后，主动销毁，之后会起一个新的。主要解决一些资源释放的问题。
 CELERY_RESULT_EXPIRES = None  # celery任务执行结果的超时时间，
-CELERY_TASK_RESULT_EXPIRES = None
+CELERY_TASK_RESULT_EXPIRES = 60*60*24
 # 这个表示保存任务结果的时长，这个时间会被设置到 redis 里面（假设 backend 是 redis ），如果抓取数据量大的话，是可以缩短保存的时间，
-# 节省 backend 的资源（ redis 主要是内存）消耗，默认是 24 小时（ 86400 ），单位是秒。
-CELERY_TASK_TIME_LIMIT = 7200
+CELERY_TASK_TIME_LIMIT = 5
 # 单个任务的运行时间不超过此值，否则会被SIGKILL 信号杀死
 CELERY_ENABLE_UTC = True
-CELERY_TIMEZONE = "UTC"
+CELERY_TIMEZONE = "Asia/Shanghai"
 CELERY_WORKER_CONCURRENCY = 40  # celery worker的并发数
 # 也是命令行-c指定的数目,事实上实践发现并不是worker也多越好,保证任务不堆积,加上一定新增任务的预留就可
 # 官方用来修复CELERY_ENABLE_UTC=False and USE_TZ = False 时时间比较错误的问题；
