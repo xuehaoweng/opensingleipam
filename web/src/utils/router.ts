@@ -87,7 +87,7 @@ function generatorRoutes(res: Array<OriginRoute>) {
         title: it.name,
         affix: !!it.affix,
         cacheable: !!it.cacheable,
-        icon: it.meta.icon || 'menu',
+        icon: it.icon || 'menu',
         iconPrefix: it.iconPrefix || 'iconfont',
       },
     }

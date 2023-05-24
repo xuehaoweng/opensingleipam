@@ -30,6 +30,7 @@
       "hidden": false,
       "path": "/task_center",
       "web_path": "/task_center",
+      "icon": "menu",
       "meta": {
             "title": "地址中心",
             "iconPrefix": "iconfont",
@@ -41,6 +42,7 @@
               "name": "任务列表",
               "path": "/task_center/task_list",
               "web_path": "/task_center/task_list",
+              "icon": "detail",
               "meta": {
                   "title": "任务列表",
                   "affix": true,
@@ -56,6 +58,7 @@
       "hidden": false,
       "path": "/users",
       "web_path": "/users",
+      "icon": "menu",
       "meta": {
             "title": "操作中心",
             "iconPrefix": "iconfont",
@@ -67,6 +70,7 @@
               "name": "操作日志",
               "path": "/users/oplogs",
               "web_path": "/users/oplogs",
+              "icon": "index",
               "meta": {
                   "title": "操作日志",
                   "affix": true,
