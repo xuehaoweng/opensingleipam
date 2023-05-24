@@ -265,14 +265,14 @@ LOGGING = {
             'backupCount': 5,
             'formatter': 'verbose',
         },
-        'db_backends': {
-            'level': 'DEBUG',
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(BASE_LOG_DIR, "dbbackends.log"),
-            'maxBytes': 1024 * 1024 * 50,  # 5 MB
-            'backupCount': 5,
-            'formatter': 'verbose',
-        },
+        # 'db_backends': {
+        #     'level': 'DEBUG',
+        #     'class': 'logging.handlers.RotatingFileHandler',
+        #     'filename': os.path.join(BASE_LOG_DIR, "dbbackends.log"),
+        #     'maxBytes': 1024 * 1024 * 50,  # 5 MB
+        #     'backupCount': 5,
+        #     'formatter': 'verbose',
+        # },
         'ipam': {
             'level': 'DEBUG',
             'class': 'logging.handlers.RotatingFileHandler',
@@ -299,11 +299,11 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': True
         },
-        'django.db.backends': {
-            'handlers': ['db_backends', 'console'],  # 与代码与数据库的交互有关的消息。例如，请求执行的每个应用程序级SQL语句都在 DEBUG该记录器级别记录。
-            'level': 'DEBUG',
-            'propagate': False
-        },
+        # 'django.db.backends': {
+        #     'handlers': ['db_backends', 'console'],  # 与代码与数据库的交互有关的消息。例如，请求执行的每个应用程序级SQL语句都在 DEBUG该记录器级别记录。
+        #     'level': 'DEBUG',
+        #     'propagate': False
+        # },
         'ipam': {
             'handlers': ['ipam', 'console'],
             'level': 'DEBUG',
