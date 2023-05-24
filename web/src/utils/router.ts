@@ -12,6 +12,9 @@ import defaultRouteJson from '../../default_menu.json'
 import { ADMIN_WORK_USER_INFO_KEY, ADMIN_WORK_BUTTON_AUTH, ADMIN_WORK_S_TENANT } from '@/store/keys'
 const navigateID = localStorage.getItem(ADMIN_WORK_S_TENANT)
 interface OriginRoute {
+  name: unknown
+  web_path: any
+  link_path: any
   menuUrl: string
   menuName?: string
   hidden?: boolean

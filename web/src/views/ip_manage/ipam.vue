@@ -136,9 +136,9 @@
         <li><span style="color: red">总之: 不能再出事，我们已不能再承受</span></li> -->
         <!--        <n-button type="info" size="small" style="float: right" @click="export_ipam_detail">导出EXCEL</n-button>-->
         <n-data-table :data="dispatch_list.slice(
-            (dispatch_page - 1) * dispatch_pageSize,
-            dispatch_page * dispatch_pageSize
-          )
+          (dispatch_page - 1) * dispatch_pageSize,
+          dispatch_page * dispatch_pageSize
+        )
           " :columns="dispatch_tableColumns" :row-key="dispatch_rowKey" />
         <div class="flex justify-center">
           <n-pagination v-model:page="dispatch_page" :page-count="dispatch_pageCount" show-size-picker
@@ -157,8 +157,8 @@
         <!--        <n-button type="info" size="small" style="float: right" @click="export_ipam_detail">导出EXCEL</n-button>-->
         <!--        <template #content>-->
         <DataForm ref="dispatch_many_DataFormRef" :form-config="{
-            labelWidth: 60,
-          }" :rules="rules" preset="form-item" :options="dispatch_many_FormOptions" />
+          labelWidth: 60,
+        }" :rules="rules" preset="form-item" :options="dispatch_many_FormOptions" />
         <!--        </template>-->
       </template>
     </ModalDialog>
@@ -239,7 +239,7 @@ import {
   reactive,
   ref,
   shallowReactive,
-  VNodeChild 
+  VNodeChild
 } from 'vue'
 import { Pencil as CashIcon } from '@vicons/ionicons5'
 import {
@@ -329,10 +329,10 @@ export default defineComponent({
       result_list: shallowReactive([]) as Array<any>,
       count: ref(0),
       maxhosts: ref(0),
-      used:ref(0),
-      freehosts:ref(0),
-      freehosts_percent:ref(0),
-      Used_percent:ref(0)
+      used: ref(0),
+      freehosts: ref(0),
+      freehosts_percent: ref(0),
+      Used_percent: ref(0)
     })
     const refresh_subnet_id = ref(0)
     const change_desc_form = ref({
@@ -512,7 +512,7 @@ export default defineComponent({
             key: 'lastOnlineTime',
             // width: '150px',
             render: (rowData) => {
-              return rowData['lastOnlineTime'] as VNodeChild 
+              return rowData['lastOnlineTime'] as VNodeChild
             },
           },
           // {
@@ -858,7 +858,7 @@ export default defineComponent({
     }
 
     function get_new() {
-        // console.log(subnet_info)
+      // console.log(subnet_info)
       if (subnet_info.value['next_page_url']) {
         // console.log('到底了，请二次请求滚动加载最新')
         // console.log(subnet_info.value['next_page_url'])
@@ -1152,16 +1152,17 @@ export default defineComponent({
           ',' +
           detail_list[i].description +
           ',' +
-          detail_list[i]['lastOnlineTime'] +
+          (detail_list[i]['lastOnlineTime'] === null ? '暂无' : detail_list[i]['lastOnlineTime']) +
           ',' +
-          
+
           '\n'
       }
       export_str = encodeURIComponent(export_str)
       const link = document.createElement('a')
       link.href = 'data:text/csv;charset=utf-8,\ufeff' + export_str
       // link.style = 'visibility:hidden'
-      link.download = '地址详情表格.csv'
+
+      link.download = formate_date() + '地址详情表格.csv'
       document.body.appendChild(link)
       link.click()
       document.body.removeChild(link)
@@ -1670,10 +1671,20 @@ export default defineComponent({
         })
       })
     }
-
+    function formate_date() {
+      var now = new Date(); // 获取当前时间
+      var year = now.getFullYear(); // 获取年份
+      var month = now.getMonth() + 1; // 获取月份(从0开始计数)
+      var day = now.getDate(); // 获取日期
+      var hour = now.getHours(); // 获取小时
+      var minute = now.getMinutes(); // 获取分钟
+      var second = now.getSeconds();
+      return year + "-" + month + "-" + day + "-" + hour + "-" + minute + "-" + second
+    }
     onMounted(get_tree_data)
     onMounted(get_tags)
     return {
+      formate_date,
       change_desc_submit,
       change_desc,
       get_tags,
