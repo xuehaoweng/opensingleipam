@@ -1,4 +1,5 @@
 import json
+import time
 from collections import OrderedDict
 
 import netaddr
@@ -52,7 +53,10 @@ class HostsSet:
         self.stop = stop
         self.subnet = subnet
         self.network = int(self.subnet.subnet.network_address)
+        # a = time.time() * 1000
         self.used_set = subnet.ipaddress_set.all()
+        # b = time.time() * 1000
+        # print("Request 地址all %.2f ms" % (b - a))
 
     def __getitem__(self, i):
         if isinstance(i, slice):
@@ -128,12 +132,15 @@ class HostsListPagination(pagination.BasePagination):
         return list(queryset[self.offset: self.offset + self.limit])  # noqa
 
     def get_paginated_response(self, data):
+        # start_time = time.time() * 1000
         empty = round(len([i for i in data if i['tag'] == 1]) * 100 / len(data), 2)
         dist_and_used = round(len([i for i in data if i['tag'] == 2]) * 100 / len(data), 2)
         reserved = round(len([i for i in data if i['tag'] == 3]) * 100 / len(data), 2)
         not_dist_used = round(len([i for i in data if i['tag'] == 4]) * 100 / len(data), 2)
         dist_not_used = round(len([i for i in data if i['tag'] == 6]) * 100 / len(data), 2)
         self_empty = round(len([i for i in data if i['tag'] == 7]) * 100 / len(data), 2)
+        # end_time = time.time() * 1000
+        # print("Request page %.2f ms" % (end_time - start_time))
         return Response(
             OrderedDict(
                 [
@@ -293,9 +300,16 @@ class SubnetAddressView(ListAPIView):
     pagination_class = HostsListPagination
 
     def get_queryset(self):
+        start_time = time.time() * 1000
         super().get_queryset()
-        subnet = get_object_or_404(self.subnet_model, pk=self.kwargs['subnet_id'])
-        qs = HostsSet(subnet)
+        # subnet = get_object_or_404(self.subnet_model, pk=self.kwargs['subnet_id'])
+        subnet_instance = Subnet.objects.get(id=self.kwargs['subnet_id'])
+        # # print(subnet)
+        # print(subnet_instance)
+        # print('subnet %.2f ms' % (time.time() * 1000 - start_time))
+        # host_time = time.time() * 1000
+        qs = HostsSet(subnet_instance)
+        # print('host_time_cost %.2f ms' % (host_time - start_time))
         return qs
 
 

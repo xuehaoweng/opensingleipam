@@ -30,22 +30,22 @@
       const userStore = useUserStore()
       const layoutStore = useLayoutStore()
       const options = [
-        {
-          label: '个人中心',
-          key: 'personal-center',
-          icon: () =>
-            h(NIcon, null, {
-              default: () => h(Menu),
-            }),
-        },
-        {
-          label: '退出登录',
-          key: 'logout',
-          icon: () =>
-            h(NIcon, null, {
-              default: () => h(LogInOutline),
-            }),
-        },
+        // {
+        //   label: '个人中心',
+        //   key: 'personal-center',
+        //   icon: () =>
+        //     h(NIcon, null, {
+        //       default: () => h(Menu),
+        //     }),
+        // },
+        // {
+        //   label: '退出登录',
+        //   key: 'logout',
+        //   icon: () =>
+        //     h(NIcon, null, {
+        //       default: () => h(LogInOutline),
+        //     }),
+        // },
       ]
       function personalCenter() {
         ;(layoutStore as any).onPersonalCenter && (layoutStore as any).onPersonalCenter()
