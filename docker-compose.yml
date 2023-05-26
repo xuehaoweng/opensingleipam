@@ -1,9 +1,9 @@
 version: "3.2"
 networks:
-  netaxe-network:
-    driver: default
-    config:
-    - subnet: 192.168.122.0/24
+  ipam_network:
+    ipam:
+      config:
+        - subnet: 192.168.253.0/24
 services:
 # 前端
   micro-ipam-web:
@@ -14,7 +14,7 @@ services:
     ports:
       - "9980:80"
     networks:
-      - "netaxe-network"
+      - "ipam_network"
     restart: always
 
   micro-ipam-backend:
@@ -28,7 +28,7 @@ services:
       - ./backend/IpamV1/conf.py:/home/ipam_backend/IpamV1/conf.py
       - ./backend/logs:/home/ipam_backend/logs
     networks:
-      - "netaxe-network"
+      - "ipam_network"
     
   micro-celery-ipam:
     image: registry.cn-hangzhou.aliyuncs.com/netaxe/ipam-backend:1.6
@@ -38,7 +38,7 @@ services:
       - ./backend/IpamV1/conf.py:/home/ipam_backend/IpamV1/conf.py
       - ./backend/logs:/home/ipam_backend/logs
     networks:
-      - "netaxe-network"
+      - "ipam_network"
   micro-redis-cache:
     image: registry.cn-hangzhou.aliyuncs.com/netaxe/redis:latest
     container_name: micro-redis-cache
@@ -46,4 +46,4 @@ services:
       - "36379:6379"
     command: "redis-server --requirepass dade0f2a65237a56b79277e6dd27351d2854df033e0ad4b4f90abec229cd64df"
     networks:
-      - "netaxe-network"
+      - "ipam_network"

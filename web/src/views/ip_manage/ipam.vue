@@ -573,7 +573,7 @@ export default defineComponent({
                 value: rowData.description,
                 onUpdateValue: (newVal: any) => {
                   // rowData.u_location_start = newVal
-                  //console.log('rowData.value', rowData)
+                  ////console.log('rowData.value', rowData)
                   rowData.description = newVal
                 },
               })
@@ -589,7 +589,7 @@ export default defineComponent({
           //       value: rowData.bgbu,
           //       onUpdateValue: (newVal: any) => {
           //         // rowData.u_location_start = newVal
-          //         //console.log('rowData.value', rowData)
+          //         ////console.log('rowData.value', rowData)
           //         rowData.bgbu = newVal
           //       },
           //     }
@@ -764,12 +764,12 @@ export default defineComponent({
         const ws_url = ws_scheme + '://' + window.location.host + '/ws/ipam/'
         webSocket = new WebSocket(ws_url)
         webSocket.onopen = function () {
-          //console.log('连接成功！')
+          ////console.log('连接成功！')
           socketOpen = true
           let ipam_dict = {
             method: 'get_room_name',
           }
-          //console.log(ipam_dict)
+          ////console.log(ipam_dict)
           doSend(
             JSON.stringify({
               message: ipam_dict,
@@ -779,17 +779,17 @@ export default defineComponent({
 
         webSocket.onmessage = function (evt) {
           var received_msg = evt.data
-          //console.log('接受消息：', JSON.parse(received_msg)['message'])
+          ////console.log('接受消息：', JSON.parse(received_msg)['message'])
           if (JSON.parse(received_msg)['message']['room_name'] !== undefined) {
             room_group_name.value = JSON.parse(received_msg)['message']['room_name']
           }
         }
 
         webSocket.onclose = function () {
-          //console.log('连接关闭！')
+          ////console.log('连接关闭！')
         }
         webSocket.onerror = function () {
-          //console.log('连接异常！')
+          ////console.log('连接异常！')
         }
       }
     }
@@ -799,8 +799,8 @@ export default defineComponent({
       get({
         url: getSubnetTree + '?subnet=1',
       }).then((res) => {
-        //  //console.log('res', res)
-        //  //console.log('tree_data', tree_data.value)
+        //  ////console.log('res', res)
+        //  ////console.log('tree_data', tree_data.value)
 
         tree_data.value.length = 0
         // let tree_list = []
@@ -808,7 +808,7 @@ export default defineComponent({
           ele['key'] = ele['id']
           // tree_list.push(ele)
           ele['suffix'] = () => {
-            // console.log(ele['children'])
+            // //console.log(ele['children'])
             if (ele['children']) {
               return h(
                 NButton,
@@ -826,7 +826,7 @@ export default defineComponent({
           }
           if (ele.children) {
             if (ele.children.length === 0) {
-              // console.log('第一层级下面children为空')
+              // //console.log('第一层级下面children为空')
               delete ele.children
             } else {
               ele.children.forEach((item) => {
@@ -852,16 +852,16 @@ export default defineComponent({
           })
         })
         nextTick(() => {
-          //console.log('tree_data', tree_data)
+          ////console.log('tree_data', tree_data)
         })
       })
     }
 
     function get_new() {
-      // console.log(subnet_info)
+      // //console.log(subnet_info)
       if (subnet_info.value['next_page_url']) {
-        // console.log('到底了，请二次请求滚动加载最新')
-        // console.log(subnet_info.value['next_page_url'])
+        // //console.log('到底了，请二次请求滚动加载最新')
+        // //console.log(subnet_info.value['next_page_url'])
         var start_ipaddress = subnet_info.value['next_page_url'].split('?start=')[1]
         request_next_status.value = true
         get({
@@ -873,11 +873,11 @@ export default defineComponent({
           },
         }).then((next_res) => {
           request_next_status.value = false
-          // console.log(next_res)
+          // //console.log(next_res)
           subnet_info.value.result_list = subnet_info.value.result_list.concat(next_res['results'])
           subnet_info.value.next_page_url = next_res['next']
           subnet_info.value.maxhosts = Number(subnet_info.value.maxhosts) + Number(next_res['results'].length)
-          console.log(subnet_info.value.result_list.length)
+          //console.log(subnet_info.value.result_list.length)
         })
       }
 
@@ -885,8 +885,8 @@ export default defineComponent({
     }
 
     function handleScroll(event) {
-      // console.log(event)
-      // console.log(button_roll.value.scrollTop)
+      // //console.log(event)
+      // //console.log(button_roll.value.scrollTop)
       //
       // //如果数据有在加载中则这次请求退出
       if (request_next_status.value) return
@@ -911,7 +911,7 @@ export default defineComponent({
           subnet_tag_list.length = 0
 
           if (option.label.indexOf((':')) !== -1) {
-            // console.log('v6网段')
+            // //console.log('v6网段')
             add_subnet_form.value.master_subnet_id = option.label + '-' + option.id
             get({
               url: getSubnetAddress + option.id + '/ip_address',
@@ -926,7 +926,7 @@ export default defineComponent({
                 var res = resp['data']
                 var res_results = resp['results']
                 var next_page_url = resp['next']
-                //console.log('详细网段数据', res)
+                ////console.log('详细网段数据', res)
                 nextTick(() => {
                   utilization_option.series[0].data.length = 0
                   utilization_option.series[0].data.push({
@@ -962,7 +962,7 @@ export default defineComponent({
                 } else {
                   ip_used_list = []
                 }
-                // console.log('ip_used_list', ip_used_list)
+                // //console.log('ip_used_list', ip_used_list)
                 subnet_info.value = {
                   subnet: option.label,
                   desc: res.sub_net[0]['description'],
@@ -982,7 +982,7 @@ export default defineComponent({
           } else {
             // message.info('当前选中最后一层元素做查询' + option.label)
             if (option.children) {
-              //console.log('还有子元素不做查询', option)
+              ////console.log('还有子元素不做查询', option)
               detail_show.value = false
               add_subnet_form.value.master_subnet_id = option.label + '-' + option.id
               return
@@ -1001,7 +1001,7 @@ export default defineComponent({
                   var res = resp['data']
                   var res_results = resp['results']
                   var next_page_url = resp['next']
-                  //console.log('详细网段数据', res)
+                  ////console.log('详细网段数据', res)
                   nextTick(() => {
                     utilization_option.series[0].data.length = 0
                     utilization_option.series[0].data.push({
@@ -1037,7 +1037,7 @@ export default defineComponent({
                   } else {
                     ip_used_list = []
                   }
-                  // console.log('ip_used_list', ip_used_list)
+                  // //console.log('ip_used_list', ip_used_list)
                   subnet_info.value = {
                     subnet: option.label,
                     desc: res.sub_net[0]['description'],
@@ -1069,19 +1069,19 @@ export default defineComponent({
     onMounted(echarts_init)
 
     function clear_keywords() {
-      //console.log('清除搜索关键字', subnet_search_keyword.value)
+      ////console.log('清除搜索关键字', subnet_search_keyword.value)
       // subnet_search_keyword.value = ''
       pattern.value = ''
       get_tree_data()
     }
 
     function open_export() {
-      //console.log('导出网段对话框打开')
+      ////console.log('导出网段对话框打开')
       modalDialog.value?.toggle()
       let csrf_token = Cookies.get('csrftoken')
       let sessionid = Cookies.get('sessionid')
       // subnet_loading.value = true
-      //  //console.log({"Cookie":`csrftoken=${csrf_token};sessionid=${sessionid}`})
+      //  ////console.log({"Cookie":`csrftoken=${csrf_token};sessionid=${sessionid}`})
       // new_static_formdata.append('csrfmiddlewaretoken', csrf_token)
       get({
         url: getSubnetTree,
@@ -1140,7 +1140,7 @@ export default defineComponent({
 
     function export_ipam_detail() {
       let export_str = '地址,标签,描述信息,最近在线\n'
-      // console.log(detail_list)
+      // //console.log(detail_list)
       // detail_list[i]['bgbu'] +
       //     ',' +
       for (let i = 0; i < detail_list.length; i++) {
@@ -1169,7 +1169,7 @@ export default defineComponent({
     }
 
     function AddRootConfirm() {
-      //console.log(add_root_form.value)
+      ////console.log(add_root_form.value)
       // add_root_show.value = false
       const post_data = new FormData()
       var master_subnet_id = add_root_form.value['master_subnet_id'].split('-')[1]
@@ -1192,14 +1192,14 @@ export default defineComponent({
         } else {
           message.error(res.message)
         }
-        //console.log(res)
+        ////console.log(res)
 
         get_tree_data()
       })
     }
 
     function AddSubnetConfirm() {
-      //console.log(add_root_form.value)
+      ////console.log(add_root_form.value)
       add_root_show.value = false
       const post_data = new FormData()
       var master_subnet_id = add_subnet_form.value['master_subnet_id'].split('-')[1]
@@ -1223,7 +1223,7 @@ export default defineComponent({
           message.error(res.message)
 
         }
-        console.log(res)
+        //console.log(res)
 
         get_tree_data()
       })
@@ -1261,7 +1261,7 @@ export default defineComponent({
     }
 
     function handleCloseTag(item) {
-      //console.log('closeitem', item)
+      ////console.log('closeitem', item)
       // colors = colors.filter(function(item) {    return item != "red"});
       subnet_tag_list.forEach(function (ele, index, arr) {
         if (ele === item) {
@@ -1272,15 +1272,15 @@ export default defineComponent({
 
     function table_type_func() {
       refresh_subnet_id.value = subnet_info.value['subnet_id']
-      console.log(subnet_info.value)
+      //console.log(subnet_info.value)
       refresh_subnet(refresh_subnet_id.value)
       nextTick(() => {
         table_modalDialog.value?.toggle()
         detail_list.length = 0
-        //  //console.log(subnet_info.value['table_type'][0]['note'])
-        //  //console.log(typeof subnet_info.value['table_type'][0]['note'])
-        //  //console.log(typeof eval('(' + subnet_info.value['table_type'][0]['note'] + ')'))
-        //  //console.log(typeof JSON.parse(subnet_info.value['table_type'][0]['note']))
+        //  ////console.log(subnet_info.value['table_type'][0]['note'])
+        //  ////console.log(typeof subnet_info.value['table_type'][0]['note'])
+        //  ////console.log(typeof eval('(' + subnet_info.value['table_type'][0]['note'] + ')'))
+        //  ////console.log(typeof JSON.parse(subnet_info.value['table_type'][0]['note']))
         let detail_eval_list = []
         subnet_info.value['table_type'].forEach((ele) => {
           // if (ele['note']) {
@@ -1294,7 +1294,7 @@ export default defineComponent({
 
           detail_eval_list.push(ele)
         })
-        //  //console.log(detail_eval_list[0]['note']['Last Online Time'])
+        //  ////console.log(detail_eval_list[0]['note']['Last Online Time'])
         detail_list.push(...detail_eval_list)
         detail_page.value = 1
         detail_pageSize.value = 10
@@ -1307,7 +1307,7 @@ export default defineComponent({
     }
 
     function select_all() {
-      //console.log(subnet_info.value['table_type'])
+      ////console.log(subnet_info.value['table_type'])
       let tag_array = []
       subnet_info.value['table_type'].forEach((item) => {
         tag_array.push(item.ip)
@@ -1319,8 +1319,8 @@ export default defineComponent({
     function dispatch_ip() {
       if (subnet_tag_list.length > 0) {
         dispatch_modalDialog.value?.toggle()
-        //console.log(subnet_info.value['table_type'])
-        //console.log(subnet_tag_list)
+        ////console.log(subnet_info.value['table_type'])
+        ////console.log(subnet_tag_list)
         let dispatch_array = []
         // dispatch_array = subnet_info.value['table_type'].filter((item) => {
         //   return subnet_tag_list.includes(item.ip)
@@ -1348,7 +1348,7 @@ export default defineComponent({
         // let csrf_token = Cookies.get('csrftoken')
         // let put_data = {}
         subnet_tag_list.forEach((item) => {
-          //console.log(item)
+          ////console.log(item)
           let sub = {
             ipaddr: item,
           }
@@ -1375,10 +1375,10 @@ export default defineComponent({
     }
 
     function dispatch_many_func() {
-      //console.log('dispatch_many_FormOptions', dispatch_many_FormOptions)
+      ////console.log('dispatch_many_FormOptions', dispatch_many_FormOptions)
       let prefix = subnet_info.value['subnet'].split('.')
       prefix.pop()
-      //console.log('前缀', prefix.join('.'))
+      ////console.log('前缀', prefix.join('.'))
       if (dispatch_many_FormOptions[0].value.value !== undefined) {
         dispatch_many_FormOptions[0].value.value = prefix.join('.')
       }
@@ -1393,7 +1393,7 @@ export default defineComponent({
     function DispatchManyConfirm() {
       if (dispatch_many_DataFormRef.value?.validator()) {
         let dispatch_many_form = dispatch_many_DataFormRef.value.generatorParams()
-        //console.log('dispatch_many_form', dispatch_many_form)
+        ////console.log('dispatch_many_form', dispatch_many_form)
 
         // let csrf_token = Cookies.get('csrftoken')
 
@@ -1425,7 +1425,7 @@ export default defineComponent({
     }
 
     function dispatch_confirm() {
-      console.log('执行分配地址', dispatch_list)
+      //console.log('执行分配地址', dispatch_list)
       const update_list = []
       dispatch_list.forEach((item) => {
         const dict = {
@@ -1472,11 +1472,11 @@ export default defineComponent({
           var res_results = resp['results']
           var next_page_url = resp['next']
           detail_show.value = true
-          //console.log('详细网段数据', res)
+          ////console.log('详细网段数据', res)
           nextTick(() => {
             subnet_tag_list.length = 0
             utilization_option.series[0].data.length = 0
-            // console.log(res.subnet_used)
+            // //console.log(res.subnet_used)
             utilization_option.series[0].data.push({
               value: res.subnet_used['已分配已使用_percent'],
               name: '已分配已使用',
@@ -1526,7 +1526,7 @@ export default defineComponent({
     }
 
     function port_style(status) {
-      // console.log(status)
+      // //console.log(status)
       let tag_value = parseInt(status)
       if (tag_value === 1) {
         // 空闲
@@ -1569,12 +1569,12 @@ export default defineComponent({
           subnet_name_list.push(array[i]['label'])
         }
       }
-      //console.log(set_tree_data)
+      ////console.log(set_tree_data)
       return result
     }
 
     function tree_filter() {
-      //console.log('搜索关键字', subnet_search_keyword.value)
+      ////console.log('搜索关键字', subnet_search_keyword.value)
       detail_show.value = false
       const filter_list = []
       filter_list.push(...tree_data.value)
@@ -1583,7 +1583,7 @@ export default defineComponent({
         tree_data.value.length = 0
         show_list.length = 0
         filter_list.forEach((item) => {
-          //  //console.log(item)
+          //  ////console.log(item)
           if (item.label.indexOf(subnet_search_keyword.value) !== -1) {
             show_list.push(item)
           }
@@ -1606,12 +1606,12 @@ export default defineComponent({
     }
 
     function create_subnet() {
-      console.log('master_subnet_id', add_root_form.value['master_subnet_id'])
+      //console.log('master_subnet_id', add_root_form.value['master_subnet_id'])
       if (add_subnet_form.value['master_subnet_id']) {
-        console.log('新增子网')
+        //console.log('新增子网')
         add_subnet_show.value = true
       } else {
-        console.log('新增根')
+        //console.log('新增根')
         add_root_show.value = true
       }
     }
@@ -1626,17 +1626,17 @@ export default defineComponent({
         },
       }).then((res) => {
         // tags_color_options
-        console.log('tags', res)
+        //console.log('tags', res)
         tags_list.length = 0
         tags_list.push(...res['data'])
         nextTick(() => {
-          console.log('tags_list', tags_list)
+          //console.log('tags_list', tags_list)
         })
       })
     }
 
     function change_desc() {
-      console.log('subnet_info', subnet_info.value)
+      //console.log('subnet_info', subnet_info.value)
       change_desc_show.value = true
       change_desc_form.value['subnet'] = subnet_info.value['subnet']
       change_desc_form.value['subnet_id'] = subnet_info.value['subnet_id']
@@ -1644,7 +1644,7 @@ export default defineComponent({
     }
 
     function change_desc_submit() {
-      console.log(change_desc_form.value)
+      //console.log(change_desc_form.value)
       const post_data = new FormData()
       // var master_subnet_id = add_subnet_form.value['master_subnet_id'].split('-')[1]
       // if (master_subnet_id === 'ROOT') {
@@ -1661,7 +1661,7 @@ export default defineComponent({
         url: PostAddressHandel,
         data: post_data,
       }).then((res) => {
-        console.log('change_desc', res)
+        //console.log('change_desc', res)
         message.info("更新网段描述成功")
         // change_desc_form.value['subnet_id'] = ''
         // change_desc_form.value['description'] = ''

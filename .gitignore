@@ -12,3 +12,4 @@ web/node_modules/
 web/dist.zip
 web/dist/
 web/components.d.ts
+.vscode

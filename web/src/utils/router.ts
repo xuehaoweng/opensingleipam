@@ -59,7 +59,7 @@ function getComponent(it: OriginRoute) {
 }
 
 function getCharCount(str: string, char: string) {
-  // console.log(str)
+  // //console.log(str)
   const regex = new RegExp(char, 'g')
   const result = str.match(regex)
   const count = !result ? 0 : result.length
@@ -79,7 +79,7 @@ function generatorRoutes(res: Array<OriginRoute>) {
   const tempRoutes: Array<RouteRecordRawWithHidden> = []
   res.forEach((it) => {
     const path = it.link_path && isExternal(it.link_path) ? it.link_path : it.web_path
-    // console.log(it)
+    // //console.log(it)
     const route: RouteRecordRawWithHidden = {
       path: path,
       name: getNameByUrl(path),
@@ -119,10 +119,10 @@ router.beforeEach(async (to) => {
         if (!import.meta.env.VITE_LOCAL_ROUTER) {
           webRoutes = await getRoutes()
         } else {
-          // console.log(defaultRouteJson.menu)
+          // //console.log(defaultRouteJson.menu)
           // 本地 rundev加载
           webRoutes = generatorRoutes(defaultRouteJson.menu)
-          console.log('webRoutes', webRoutes)
+          //console.log('webRoutes', webRoutes)
         }
         
       // const tempRoutes = await getRoutes()

@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 import os
 import sys
 from pathlib import Path
-
+from confload.confload import config
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # If You Have APP Dir
@@ -343,3 +343,36 @@ CELERY_WORKER_CONCURRENCY = 40  # celery worker的并发数
 # 详情见：https://github.com/celery/django-celery-beat/pull/216/files
 DJANGO_CELERY_BEAT_TZ_AWARE = False
 
+DATABASES = {
+    'default': {
+        'NAME': config.mysql_db,
+        'ENGINE': 'django.db.backends.mysql',
+        'HOST': config.mysql_host,
+        'USER': config.mysql_user,
+        'PASSWORD': config.mysql_password,
+        'PORT': config.mysql_port,
+        'TEST_CHARSET': 'utf8',
+        'TEST_COLLATION': 'utf8_general_ci',
+        'TEST': {'NAME': 'test_netops',
+                 'CHARTSET': 'utf8',
+                 'COLLATION': 'utf8_general_ci'},
+        'OPTIONS': {
+            "init_command": "SET default_storage_engine='INNODB'",
+
+        }
+    },
+}
+
+# email配置
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_USE_TLS = False
+EMAIL_USE_SSL = True
+EMAIL_HOST = 'mail.netaxemail.com.cn'
+EMAIL_PORT = 465
+EMAIL_HOST_USER = 'ccr_netops@***.com.cn'
+EMAIL_HOST_PASSWORD = '********'
+EMAIL_RECEIVE_USER=['netaxe@netaxe.com']
+EMAIL_FROM_NAME = 'NETAXE网络自动化系统'
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+REDIS_URL = "redis://:{}@{}:{}/".format(config.redis_pwd, config.redis_host, config.redis_port)
