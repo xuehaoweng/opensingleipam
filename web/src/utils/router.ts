@@ -109,7 +109,7 @@ function isTokenExpired(): boolean {
   return !!token
 }
 router.beforeEach(async (to) => {
-  console.log('import.meta.env.VITE_LOCAL_ROUTER',import.meta.env.VITE_LOCAL_ROUTER)
+  // console.log('import.meta.env.VITE_LOCAL_ROUTER',import.meta.env.VITE_LOCAL_ROUTER)
   if (whiteRoutes.includes(to.path)) {
     return true
   } else {
