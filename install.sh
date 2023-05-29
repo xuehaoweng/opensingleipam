@@ -50,7 +50,7 @@ if [ -x "$(command -v docker)" -a -x "$(command -v docker-compose)" ]; then
 
   # 安装ipam-获取ipam的compose
   if [ ! -f "docker-compose.yml" ];then
-    wget https://gitee.com/JPressProjects/ipam/raw/master/docker-compose.yml
+    wget *****docker-compose.yml
   fi
 
   if [[ "$port" != "" ]]; then
