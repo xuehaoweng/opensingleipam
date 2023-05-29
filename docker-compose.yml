@@ -25,7 +25,7 @@ services:
       networks:
         - "ipam_network"
       ports:
-        - "31101:80"
+        - "31105:80"
 
     # 前端
     ipam-web:
