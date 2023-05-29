@@ -5,45 +5,36 @@ networks:
       config:
         - subnet: 192.168.253.0/24
 services:
-# 前端
-  micro-ipam-web:
-    image: registry.cn-hangzhou.aliyuncs.com/netaxe/ipam-web:1.0
-    build:
-      context: .
-      dockerfile: ./dockerfiles/web_dockerfile
-    ports:
-      - "9980:80"
-    networks:
-      - "ipam_network"
-    restart: always
+    # 后端入口
+    ipam-backend:
+      image: registry.cn-hangzhou.aliyuncs.com/netaxe/ipam-backend:1.0
+      build:
+          context: .
+          dockerfile: ./dockerfiles/backend_dockerfile
+      command: sh start.sh web
+      networks:
+          - "ipam_network"
+      restart: always
 
-  micro-ipam-backend:
-    image: registry.cn-hangzhou.aliyuncs.com/netaxe/ipam-backend:1.6
-    container_name: micro-ipam-backend
-    ports:
-      - "38005:18005"
-      - "38055:35055"
-    command: sh start.sh web
-    volumes:
-      - ./backend/IpamV1/conf.py:/home/ipam_backend/IpamV1/conf.py
-      - ./backend/logs:/home/ipam_backend/logs
-    networks:
-      - "ipam_network"
-    
-  micro-celery-ipam:
-    image: registry.cn-hangzhou.aliyuncs.com/netaxe/ipam-backend:1.6
-    container_name: micro-celery-ipam
-    command: sh start.sh ipam
-    volumes:
-      - ./backend/IpamV1/conf.py:/home/ipam_backend/IpamV1/conf.py
-      - ./backend/logs:/home/ipam_backend/logs
-    networks:
-      - "ipam_network"
-  micro-redis-cache:
-    image: registry.cn-hangzhou.aliyuncs.com/netaxe/redis:latest
-    container_name: micro-redis-cache
-    ports:
-      - "36379:6379"
-    command: "redis-server --requirepass dade0f2a65237a56b79277e6dd27351d2854df033e0ad4b4f90abec229cd64df"
-    networks:
-      - "ipam_network"
+    # nginx代理
+    ipam-backend-nginx:
+      image: registry.cn-hangzhou.aliyuncs.com/netaxe/base-nginx:1.23.1
+      build:
+        context: .
+        dockerfile: ./dockerfiles/nginx_dockerfile
+      networks:
+        - "ipam_network"
+      ports:
+        - "31101:80"
+
+    # 前端
+    ipam-web:
+      image: registry.cn-hangzhou.aliyuncs.com/netaxe/ipam-web:1.0
+      build:
+        context: .
+        dockerfile: ./dockerfiles/web_dockerfile
+      ports:
+        - "9905:80"
+      networks:
+        - "ipam_network"
+      restart: always

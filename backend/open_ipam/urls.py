@@ -4,18 +4,14 @@ from rest_framework.routers import DefaultRouter
 from open_ipam.views import SubnetHostsView, AvailableIpView, SubnetApiViewSet, IpAddressApiViewSet, SubnetAddressView, \
     IpAmSubnetTreeView, IpAmHandelView
 
-# JobCenterView PeriodicTaskViewSet IntervalScheduleViewSet
 router = DefaultRouter()
 #
 router.register(r'subnet_list', SubnetApiViewSet)  # 获取子网段列表
 router.register(r'ip_address_list', IpAddressApiViewSet)
-# router.register(r'periodic_task', PeriodicTaskViewSet)
-# router.register(r'interval_schedule', IntervalScheduleViewSet)
 
 urlpatterns = [
     path(r'', include(router.urls)),
     # path(r'api/', include(router.urls)),
-    # path('jobCenter/', JobCenterView.as_view(), name='jobCenter'),
     path('subnet_tree/', IpAmSubnetTreeView.as_view(), name='subnet_tree'),
     path('address_handel/', IpAmHandelView.as_view(), name='address_handel'),
 

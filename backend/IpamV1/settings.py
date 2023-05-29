@@ -13,6 +13,7 @@ import os
 import sys
 from pathlib import Path
 from confload.confload import config
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # If You Have APP Dir
@@ -26,17 +27,17 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'django-insecure-1hoyyz)v$99z2r8oxf&p&v!9(y$9vijy28m2(m$y!xuq%kv2#l'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 SECURE_CROSS_ORIGIN_OPENER_POLICY = 'None'
 ALLOWED_HOSTS = ["*"]
 # 设置项是否开启URL访问地址后面不为/跳转至带有/的路径
 APPEND_SLASH = True
 
-# 用户自定义配置
-if os.path.exists("{}/{}/{}".format(BASE_DIR, "IpamV1", "conf.py")):
-    from .conf import *
-else:
-    raise RuntimeError("没有找到conf.py的配置信息")
+# # 用户自定义配置
+# if os.path.exists("{}/{}/{}".format(BASE_DIR, "IpamV1", "conf.py")):
+#     from .conf import *
+# else:
+#     raise RuntimeError("没有找到conf.py的配置信息")
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "IpamV1.settings")
 os.environ.setdefault("DJANGO_ALLOW_ASYNC_UNSAFE", "true")
@@ -317,7 +318,6 @@ LOGGING = {
 
 }
 
-
 DATABASES = {
     'default': {
         'NAME': config.mysql_db,
@@ -346,7 +346,7 @@ EMAIL_HOST = 'mail.netaxemail.com.cn'
 EMAIL_PORT = 465
 EMAIL_HOST_USER = 'ccr_netops@***.com.cn'
 EMAIL_HOST_PASSWORD = '********'
-EMAIL_RECEIVE_USER=['netaxe@netaxe.com']
+EMAIL_RECEIVE_USER = ['netaxe@netaxe.com']
 EMAIL_FROM_NAME = 'NETAXE网络自动化系统'
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 

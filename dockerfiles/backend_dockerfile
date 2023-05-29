@@ -1,20 +1,14 @@
-##############################################
-# 基于python:3.9.16-slim
-
-# 
-##############################################
 FROM python:3.9.16-slim
 RUN sed -i s@/deb.debian.org/@/mirrors.aliyun.com/@g /etc/apt/sources.list
-
-# 系统环境依赖配置
-# 目录设置
-WORKDIR /home/ipam_backend
-
-COPY ./backend/ /home/ipam_backend
-
+RUN set -ex \
+  &&apt-get update\
+  &&apt-get install gcc -y\
+  &&apt-get install git -y
+COPY backend/ /app
+COPY config/ /config
+COPY web/default_menu.json /web/default_menu.json
 # 再次切换工作目录为Django主目录
-WORKDIR /home/ipam_backend
-
+WORKDIR /app
 
 # 安装项目所需python第三方库
 # 指定setuptools的版本，必须指定，新版本有兼容问题
@@ -31,5 +25,4 @@ RUN set -ex \
  
 #EXPOSE 8000
 EXPOSE 18005
-EXPOSE 35055
 CMD ["sh", "start.sh"]
