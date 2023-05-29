@@ -112,11 +112,14 @@ router.beforeEach(async (to) => {
   if (whiteRoutes.includes(to.path)) {
     return true
   } else {
+    console.log('import.meta.env.VITE_LOCAL_ROUTER',import.meta.env.VITE_LOCAL_ROUTER)
+
     const isEmptyRoute = layoutStore.isEmptyPermissionRoute()
+    console.log(isEmptyRoute)
     if (isEmptyRoute) {
       const accessRoutes: Array<RouteRecordRaw> = []
       let webRoutes: any = []
-      console.log('import.meta.env.VITE_LOCAL_ROUTER',import.meta.env.VITE_LOCAL_ROUTER)
+
         if (!import.meta.env.VITE_LOCAL_ROUTER) {
           webRoutes = await getRoutes()
         } else {
