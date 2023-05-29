@@ -36,17 +36,16 @@ function loadComponents() {
 const asynComponents = loadComponents()
 
 function getRoutes() {
-  if (navigateID) {
+  if (!import.meta.env.VITE_LOCAL_ROUTER) {
     return get({
       url: baseAddress + WebRouter,
       method: 'GET',
       data: { parent__isnull: true, navigate__id: navigateID }
     }).then((res: any) => {
       return generatorRoutes(res.results)
-
     })
   }else {
-    return generatorRoutes([])
+    return generatorRoutes(defaultRouteJson.menu)
   }
 
 }
@@ -113,8 +112,6 @@ router.beforeEach(async (to) => {
   if (whiteRoutes.includes(to.path)) {
     return true
   } else {
-
-
     const isEmptyRoute = layoutStore.isEmptyPermissionRoute()
     console.log(isEmptyRoute)
     if (isEmptyRoute) {
