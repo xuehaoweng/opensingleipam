@@ -36,6 +36,7 @@ function loadComponents() {
 const asynComponents = loadComponents()
 
 function getRoutes() {
+  console.log(import.meta.env.VITE_LOCAL_ROUTER)
   if (!import.meta.env.VITE_LOCAL_ROUTER) {
     return get({
       url: baseAddress + WebRouter,
