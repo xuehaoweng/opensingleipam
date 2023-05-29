@@ -1,5 +1,6 @@
 import vue from '@vitejs/plugin-vue'
 import viteSvgIcons from 'vite-plugin-svg-icons'
+// @ts-ignore
 import path from 'path'
 import { loadEnv } from 'vite'
 import vitePluginCompression from 'vite-plugin-compression'

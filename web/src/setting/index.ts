@@ -16,7 +16,7 @@ interface Setting {
     isShowFullScreen: boolean
   }
 }
-export const projectName = 'NET-AXE'
+export const projectName = 'IPAM'
 
 export default Object.assign(
   {
