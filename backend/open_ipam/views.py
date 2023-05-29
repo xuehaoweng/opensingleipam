@@ -2,16 +2,16 @@ import json
 import time
 from collections import OrderedDict
 
-import netaddr
-from celery import current_app
-from django.db.models import Sum
-from django.http import JsonResponse, HttpResponse
-from django.shortcuts import render
+# import netaddr
+# from celery import current_app
+# from django.db.models import Sum
+from django.http import JsonResponse
+# from django.shortcuts import render
 
-# Create your views here.
-from django_celery_beat.models import CrontabSchedule, PeriodicTask, IntervalSchedule
+# Create your views here. CrontabSchedule
+# from django_celery_beat.models import PeriodicTask, IntervalSchedule
 from django_filters.rest_framework import DjangoFilterBackend
-from kombu.utils.json import loads
+# from kombu.utils.json import loads
 from netaddr import iter_iprange
 from rest_framework import serializers, pagination, viewsets, permissions, filters
 from django.utils.translation import gettext_lazy as _
@@ -22,11 +22,12 @@ from rest_framework.response import Response
 from rest_framework.utils.urls import replace_query_param, remove_query_param
 from rest_framework.views import APIView
 
-from IpamV1.celery import app
-from .tasks import get_tasks
+# from IpamV1.celery import app
+# from .tasks import get_tasks
 from open_ipam.models import Subnet, IpAddress, TagsModel
 from open_ipam.serializers import HostsResponseSerializer, SubnetSerializer, IpAddressSerializer, \
-    PeriodicTaskSerializer, IntervalScheduleSerializer, TagsModelSerializer
+    TagsModelSerializer
+# PeriodicTaskSerializer, IntervalScheduleSerializer,
 from utils.custom_pagination import LargeResultsSetPagination
 from utils.custom_viewset_base import CustomViewBase
 from utils.ipam_utils import IpAmForNetwork
@@ -263,34 +264,34 @@ class LimitSet(pagination.LimitOffsetPagination):
     max_limit = None
 
 
-# 任务列表
-class PeriodicTaskViewSet(viewsets.ModelViewSet):
-    # queryset = PeriodicTask.objects.all().order_by('id')
-    queryset = PeriodicTask.objects.exclude(task__startswith='celery').order_by('id')
-    serializer_class = PeriodicTaskSerializer
-    permission_classes = ()
-    # 配置搜索功能
-    filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
-    # 如果要允许对某些字段进行过滤，可以使用filter_fields属性。
-    filter_fields = '__all__'
-    pagination_class = LimitSet
-    # 设置搜索的关键字
-    search_fields = '__all__'
-    # list_cache_key_func = QueryParamsKeyConstructor()
-
-
-class IntervalScheduleViewSet(viewsets.ModelViewSet):
-    queryset = IntervalSchedule.objects.all().order_by('id')
-    serializer_class = IntervalScheduleSerializer
-    permission_classes = ()
-    # 配置搜索功能
-    filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
-    # 如果要允许对某些字段进行过滤，可以使用filter_fields属性。
-    filter_fields = '__all__'
-    pagination_class = LimitSet
-    # 设置搜索的关键字
-    search_fields = '__all__'
-    # list_cache_key_func = QueryParamsKeyConstructor()
+# # 任务列表
+# class PeriodicTaskViewSet(viewsets.ModelViewSet):
+#     # queryset = PeriodicTask.objects.all().order_by('id')
+#     queryset = PeriodicTask.objects.exclude(task__startswith='celery').order_by('id')
+#     serializer_class = PeriodicTaskSerializer
+#     permission_classes = ()
+#     # 配置搜索功能
+#     filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
+#     # 如果要允许对某些字段进行过滤，可以使用filter_fields属性。
+#     filter_fields = '__all__'
+#     pagination_class = LimitSet
+#     # 设置搜索的关键字
+#     search_fields = '__all__'
+#     # list_cache_key_func = QueryParamsKeyConstructor()
+#
+#
+# class IntervalScheduleViewSet(viewsets.ModelViewSet):
+#     queryset = IntervalSchedule.objects.all().order_by('id')
+#     serializer_class = IntervalScheduleSerializer
+#     permission_classes = ()
+#     # 配置搜索功能
+#     filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
+#     # 如果要允许对某些字段进行过滤，可以使用filter_fields属性。
+#     filter_fields = '__all__'
+#     pagination_class = LimitSet
+#     # 设置搜索的关键字
+#     search_fields = '__all__'
+#     # list_cache_key_func = QueryParamsKeyConstructor()
 
 
 class SubnetAddressView(ListAPIView):
@@ -445,58 +446,58 @@ class IpAmHandelView(APIView):
                 return JsonResponse(res, safe=True)
 
 
-# 作业中心taskList
-class JobCenterView(APIView):
-    def get(self, request):
-        # Operationinfo = 'None'
-        get_current_tasks = request.GET.get('current_tasks')
-        get_crontab_schedules = request.GET.get('crontab_schedules')
-        get_queues = request.GET.get('get_queues')
-        celery_app = current_app
-        if get_current_tasks:
-            res = get_tasks()
-            # print(res.get())
-            # while True:
-            #     if res.ready():
-            #         result = res.get()
-            #         break
-            result = json.loads(res)
-            return JsonResponse(
-                {'code': 200, 'data': result['result'], 'count': len(result['result'])})
-        if get_crontab_schedules:
-            from django.core import serializers
-            crontab_schedules = serializers.serialize("json", CrontabSchedule.objects.all())
-            return JsonResponse(
-                {'code': 200, 'data': json.loads(crontab_schedules), 'count': len(json.loads(crontab_schedules))})
-        if get_queues:
-            queues_list = [queue.name for queue in app.conf.task_queues]
-            return JsonResponse({'code': 200, 'data': queues_list, 'count': len(queues_list)})
-
-    def post(self, request):
-        """ run tasks"""
-        celery_app = current_app
-        f = request.POST
-        f = json.loads(f['data'])
-        taskname = f['task']
-        args = f['args']
-        kwargs = f['kwargs']
-        queue = f['queue']
-        celery_app.loader.import_default_modules()
-        tasks = [(celery_app.tasks.get(taskname),
-                  loads(args),
-                  loads(kwargs),
-                  queue)]
-        if any(t[0] is None for t in tasks):
-            for i, t in enumerate(tasks):
-                if t[0] is None:
-                    break
-            return JsonResponse({'code': 400, 'data': None}, safe=False)
-        task_ids = [task.apply_async(args=args, kwargs=kwargs, queue=queue)
-                    if queue and len(queue)
-                    else task.apply_async(args=args, kwargs=kwargs)
-                    for task, args, kwargs, queue in tasks]
-        if task_ids[0] == None:
-            return JsonResponse({'code': 400, 'data': '执行失败'}, safe=False)
-        #  list:<class 'celery.result.AsyncResult'>
-        # print(task_ids[0],str(task_ids[0]))
-        return JsonResponse({'code': 200, 'data': str(task_ids[0])}, safe=False)
+# # 作业中心taskList
+# class JobCenterView(APIView):
+#     def get(self, request):
+#         # Operationinfo = 'None'
+#         get_current_tasks = request.GET.get('current_tasks')
+#         get_crontab_schedules = request.GET.get('crontab_schedules')
+#         get_queues = request.GET.get('get_queues')
+#         celery_app = current_app
+#         if get_current_tasks:
+#             res = get_tasks()
+#             # print(res.get())
+#             # while True:
+#             #     if res.ready():
+#             #         result = res.get()
+#             #         break
+#             result = json.loads(res)
+#             return JsonResponse(
+#                 {'code': 200, 'data': result['result'], 'count': len(result['result'])})
+#         if get_crontab_schedules:
+#             from django.core import serializers
+#             crontab_schedules = serializers.serialize("json", CrontabSchedule.objects.all())
+#             return JsonResponse(
+#                 {'code': 200, 'data': json.loads(crontab_schedules), 'count': len(json.loads(crontab_schedules))})
+#         if get_queues:
+#             queues_list = [queue.name for queue in app.conf.task_queues]
+#             return JsonResponse({'code': 200, 'data': queues_list, 'count': len(queues_list)})
+#
+#     def post(self, request):
+#         """ run tasks"""
+#         celery_app = current_app
+#         f = request.POST
+#         f = json.loads(f['data'])
+#         taskname = f['task']
+#         args = f['args']
+#         kwargs = f['kwargs']
+#         queue = f['queue']
+#         celery_app.loader.import_default_modules()
+#         tasks = [(celery_app.tasks.get(taskname),
+#                   loads(args),
+#                   loads(kwargs),
+#                   queue)]
+#         if any(t[0] is None for t in tasks):
+#             for i, t in enumerate(tasks):
+#                 if t[0] is None:
+#                     break
+#             return JsonResponse({'code': 400, 'data': None}, safe=False)
+#         task_ids = [task.apply_async(args=args, kwargs=kwargs, queue=queue)
+#                     if queue and len(queue)
+#                     else task.apply_async(args=args, kwargs=kwargs)
+#                     for task, args, kwargs, queue in tasks]
+#         if task_ids[0] == None:
+#             return JsonResponse({'code': 400, 'data': '执行失败'}, safe=False)
+#         #  list:<class 'celery.result.AsyncResult'>
+#         # print(task_ids[0],str(task_ids[0]))
+#         return JsonResponse({'code': 200, 'data': str(task_ids[0])}, safe=False)
