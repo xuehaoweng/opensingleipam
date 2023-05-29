@@ -18,7 +18,7 @@ services:
 
     # nginx代理
     ipam-backend-nginx:
-      image: registry.cn-hangzhou.aliyuncs.com/netaxe/base-nginx:1.23.1
+      image: registry.cn-hangzhou.aliyuncs.com/netaxe/ipam-backend-nginx:1.23.1
       build:
         context: .
         dockerfile: ./dockerfiles/nginx_dockerfile

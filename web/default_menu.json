@@ -26,34 +26,6 @@
         ]
     },
     {
-      "name": "任务中心",
-      "hidden": false,
-      "path": "/task_center",
-      "web_path": "/task_center",
-      "icon": "menu",
-      "meta": {
-            "title": "地址中心",
-            "iconPrefix": "iconfont",
-            "icon": "menu"
-      },
-      "children": [
-
-            {
-              "name": "任务列表",
-              "path": "/task_center/task_list",
-              "web_path": "/task_center/task_list",
-              "icon": "detail",
-              "meta": {
-                  "title": "任务列表",
-                  "affix": true,
-                  "iconPrefix": "iconfont",
-                  "icon": "detail",
-                  "cacheable": false
-              }
-            }
-        ]
-    },
-    {
       "name": "操作中心",
       "hidden": false,
       "path": "/users",
