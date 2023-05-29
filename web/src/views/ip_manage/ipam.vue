@@ -1431,7 +1431,7 @@ export default defineComponent({
         const dict = {
           ipaddr: item.ip,
           subnet_id: subnet_info.value['subnet_id'],
-          tag: 6,
+          tag: item.dispatch_status,
           description: item.description ? item.description : item.ip,
         }
         // update_data.value += (JSON.stringify(dict)) + ','
