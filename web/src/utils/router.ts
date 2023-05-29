@@ -109,10 +109,11 @@ function isTokenExpired(): boolean {
   return !!token
 }
 router.beforeEach(async (to) => {
+  console.log('import.meta.env.VITE_LOCAL_ROUTER',import.meta.env.VITE_LOCAL_ROUTER)
   if (whiteRoutes.includes(to.path)) {
     return true
   } else {
-    console.log('import.meta.env.VITE_LOCAL_ROUTER',import.meta.env.VITE_LOCAL_ROUTER)
+
 
     const isEmptyRoute = layoutStore.isEmptyPermissionRoute()
     console.log(isEmptyRoute)
