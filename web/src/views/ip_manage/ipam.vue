@@ -1425,13 +1425,13 @@ export default defineComponent({
     }
 
     function dispatch_confirm() {
-      //console.log('执行分配地址', dispatch_list)
+      // console.log('执行分配地址', dispatch_list)
       const update_list = []
       dispatch_list.forEach((item) => {
         const dict = {
           ipaddr: item.ip,
           subnet_id: subnet_info.value['subnet_id'],
-          tag: item.dispatch_status,
+          tag: item.dispatch_status ? item.dispatch_status : "6" ,
           description: item.description ? item.description : item.ip,
         }
         // update_data.value += (JSON.stringify(dict)) + ','
