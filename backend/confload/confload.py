@@ -44,7 +44,6 @@ def load_config_files() -> dict:
         except FileNotFoundError:
             log.warning(f"Couldn't find {fname}")
 
-
     if not data:
         raise RuntimeError(
             f"Could not find either {DEFAULTS_FILENAME} or {CONFIG_FILENAME}"
@@ -63,45 +62,24 @@ class Config:
         self.__configDict = {}
         self.healthy = ""
         self.data = data
-        self.drivers = data['drivers']
+        # self.drivers = data['drivers']
         self.mysql_db = data['mysql_db']
         self.mysql_host = data['mysql_host']
         self.mysql_port = data['mysql_port']
         self.mysql_user = data['mysql_user']
         self.mysql_password = data['mysql_password']
-        self.mongodb_host = data['mongodb_host']
-        self.mongodb_port = data['mongodb_port']
-        self.mongodb_user = data['mongodb_user']
-        self.mongodb_password = data['mongodb_password']
+        self.redis_host = data['redis_host']
+        self.redis_port = data['redis_port']
+        self.redis_pwd = data['redis_pwd']
         self.nacos = data['nacos']
-        # self.version = data['version']
+        self.version = data['version']
         self.local_dev = data['local_dev']
         self.server_ip = data['server_ip']
         self.server_port = data['server_port']
         self.nacos_port = data['nacos_port']
-        # self.virtual_host = data['virtual_host']
-        # self.allow_origins = data['allow_origins']
-        self.redis_host = data['redis_host']
-        self.redis_port = data['redis_port']
-        self.redis_pwd = data['redis_pwd']
-        # self.push_gateway = data['push_gateway']
         self.project_name = data['project_name']
-        self.mq_host = data['mq_host']
-        self.mq_username = data['mq_username']
-        self.mq_password = data['mq_password']
-        self.mq_port = data['mq_port']
-        self.queue = data['queue']
         self.url_prefix = data['url_prefix']
-        self.exchange = data['exchange']
-        self.routing_key = data['routing_key']
-        self.queue_qos = data['queue_qos']
         self.mongodb_url = data['mongodb_url']
-        self.log_config_filename = data["log_config_filename"]
-        # self.default_webhook_name = data["default_webhook_name"]
-        # self.default_webhook_headers = data["default_webhook_headers"]
-        # self.custom_webhooks = data["custom_webhooks"]
-        # 微服务 消息网关
-        # self.msg_gateway = data["msg_gateway"]
 
     # 单例模式
     def __new__(cls):
@@ -145,7 +123,6 @@ class Config:
             except Exception as e:
                 logging.exception("配置更新失败:{}".format(str(e)), exc_info=True)
 
-          
     def healthyCheck(self):
         t = threading.Thread(target=self.__healthyCheckThreadRun)
         t.start()
@@ -211,7 +188,6 @@ class Config:
             logging.exception("配置获取失败：dataId=" + self.project_name + "; group=" + group + "; tenant=" + tenant,
                               exc_info=True)
 
-
     # 发现服务
     def service_dicovery(self, serviceName, groupName='default', namespaceId="public"):
         url = "http://" + self.nacos + ":" + str(self.nacos_port) + "/nacos/v1/ns/instance/list"
@@ -228,6 +204,6 @@ class Config:
 
 config = Config()
 
-
 if __name__ == "__main__":
-    print(config.custom_webhooks)
+    # print(config.custom_webhooks)
+    pass

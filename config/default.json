@@ -3,7 +3,7 @@
     "rabbitmq": "amqp://admin:admin@10.254.0.1/",
     "virtual_host": "/",
     "url_prefix": "/ipam",
-    "project_name": "BasePlatform",
+    "project_name": "IPAM",
     "server_ip": "1.1.1.1",
     "server_port": 8000,
     "local_dev": false,
@@ -29,7 +29,5 @@
     "mongodb_url": "mongodb+srv://<username>:<password>@<url>/<db>?retryWrites=true&w=majority",
     "drivers": "backend/plugins/drivers/",
     "log_config_filename": "config/log-config.yml",
-    "msg_gateway": "http://msggateway.netaxe.svc:8000",
-    "mysql_url": "mysql+mysqlconnector://root:mysql@127.0.0.1:3306",
-    "sqlalchemy_mysql_url": "mysql+aiomysql://root:mysql@127.0.0.1:3306/alertgateway"
+    "msg_gateway": "http://msggateway.netaxe.svc:8000"
   }
