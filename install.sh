@@ -79,4 +79,6 @@ else
 
 fi
 
-rm -f install.sh
+echo " IPAM 组件单应用已经启动完毕,请打开ip:9005端口进行前端验证"
+
+#rm -f install.sh
