@@ -80,6 +80,10 @@ class Config:
         self.project_name = data['project_name']
         self.url_prefix = data['url_prefix']
         self.mongodb_url = data['mongodb_url']
+        self.mongodb_host = data['mongodb_host']
+        self.mongodb_port = data['mongodb_port']
+        self.mongodb_user = data['mongodb_user']
+        self.mongodb_password = data['mongodb_password']
 
     # 单例模式
     def __new__(cls):

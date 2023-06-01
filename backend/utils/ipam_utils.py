@@ -33,7 +33,7 @@ class IpAmForNetwork(object):
                 no1_list.append(tmp)
                 res_list_cp.remove(i)
 
-        print(len(no1_id_list), len(res_list_cp))
+        # print(len(no1_id_list), len(res_list_cp))
 
         for i in res_list:
             if i['masterSubnetId'] in no1_id_list:

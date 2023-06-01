@@ -267,7 +267,6 @@ class IpAddress(models.Model):
             instance.save()
 
 
-
 class TagsModel(models.Model):
     bg_color = models.CharField(max_length=100, blank=True, verbose_name='bg_color')
     compress = models.CharField(max_length=100, blank=True, verbose_name='compress')

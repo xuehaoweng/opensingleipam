@@ -27,6 +27,10 @@
     },
     "custom_webhooks": "backend/plugins/extensibles/custom_webhooks/",
     "mongodb_url": "mongodb+srv://<username>:<password>@<url>/<db>?retryWrites=true&w=majority",
+    "mongodb_host": "10.254.0.110",
+    "mongodb_port": 27017,
+    "mongodb_user": "root",
+    "mongodb_password": "70uUceCVL1gf",
     "drivers": "backend/plugins/drivers/",
     "log_config_filename": "config/log-config.yml",
     "msg_gateway": "http://msggateway.netaxe.svc:8000"

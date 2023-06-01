@@ -7,13 +7,9 @@ import pymongo
 from bson import ObjectId
 
 # from IpamV1.settings_dev import BASE_DIR
-from IpamV1.settings import BASE_DIR
+# from IpamV1.settings import BASE_DIR
 
-USER_CONF = {}
-if os.path.exists("{}/{}/{}".format(BASE_DIR, "IpamV1", "conf.py")):
-    from IpamV1.conf import mongo_db_conf
-
-    USER_CONF = mongo_db_conf
+from confload.confload import config
 
 
 class JSONEncoder(json.JSONEncoder):
@@ -42,10 +38,10 @@ def get_mongo_json_res(data):
 
 
 mongo_client = pymongo.MongoClient(
-    host=USER_CONF.get('host') or '10.254.0.110',
-    port=USER_CONF.get('port') or 27027,
-    username=USER_CONF.get('username') or "root",
-    password=USER_CONF.get('password') or "70uUceCVL1gf",
+    host=config.mongodb_host,
+    port=config.mongodb_port,
+    username=config.mongodb_user,
+    password=config.mongodb_password,
     maxPoolSize=1000,
     connect=False)
 
