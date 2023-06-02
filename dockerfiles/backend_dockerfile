@@ -23,6 +23,6 @@ RUN set -ex \
  && python manage.py makemigrations \
  && python manage.py migrate  --fake
  
-#EXPOSE 8000
-EXPOSE 18005
+EXPOSE 8001
+#EXPOSE 18005
 CMD ["sh", "start.sh"]
