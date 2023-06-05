@@ -57,13 +57,13 @@ if [ -x "$(command -v docker)" -a -x "$(command -v docker-compose)" ]; then
 #    perl -pi -e "s/8080:8080/$port:8080/g" docker-compose.yml
 #  fi
 # 创建docker_netaxe网络
-  docker network inspect docker_netaxe
-  if [ $? -ne 0 ]; then
-      docker network create  --subnet=1.1.38.0/24 \
-      --ip-range=1.1.38.0/24 \
-      --gateway=1.1.38.254 \
-      docker_netaxe
-  fi
+docker network inspect docker_netaxe
+if [ $? -ne 0 ]; then
+    docker network create  --subnet=1.1.38.0/24 \
+    --ip-range=1.1.38.0/24 \
+    --gateway=1.1.38.254 \
+    docker_netaxe
+fi
 
   if [ ! -f "/etc/docker/daemon.json" ];then
     sudo mkdir -p /etc/docker
