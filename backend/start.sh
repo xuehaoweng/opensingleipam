@@ -1,12 +1,10 @@
-#cd /app
-#pip3 install --upgrade pip -i https://mirrors.aliyun.com/pypi/simple/
-#pip3 install -r requirements.txt -i https://mirrors.aliyun.com/pypi/simple/
+#!/bin/bash
 
 python manage.py collectstatic --noinput
 python manage.py makemigrations
 python manage.py migrate
 web(){
-    mkdir -p /app/logs/celery_logs
+#    mkdir -p /app/logs/celery_logs
     mkdir -p /var/log/supervisor
     rm -rf /app/logs/celery_logs/w*.log
     rm -rf *.pid
