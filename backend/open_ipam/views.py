@@ -189,7 +189,7 @@ class SubnetAddressView(ListAPIView):
         return queryset
 
 
-# 获取subnet_tree
+# 获取 get subnet_tree
 class IpAmSubnetTreeView(APIView):
     def get(self, request):
         get_params = request.GET.dict()
@@ -207,7 +207,7 @@ class IpAmSubnetTreeView(APIView):
             return JsonResponse(res, safe=True)
 
 
-# 地址操作
+# 地址操作 增删改查
 class IpAmHandelView(APIView):
     def post(self, request):
         update = request.POST.get('update')

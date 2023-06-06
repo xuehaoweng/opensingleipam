@@ -13,5 +13,5 @@ web/dist.zip
 web/dist/
 web/components.d.ts
 .vscode
-
+readme.ignore.md
 config/config.json
