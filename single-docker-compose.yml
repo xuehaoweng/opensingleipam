@@ -1,0 +1,39 @@
+version: "3.7"
+services:
+    # 后端入口
+    ipam-backend:
+      image: registry.cn-hangzhou.aliyuncs.com/netaxe/ipam-backend:1.0
+      build:
+          context: .
+          dockerfile: ./dockerfiles/backend_dockerfile
+      command: sh start.sh web
+      networks:
+          - docker_netaxe
+      restart: always
+
+    # nginx代理
+    ipam-backend-nginx:
+      image: registry.cn-hangzhou.aliyuncs.com/netaxe/ipam-backend-nginx:1.23.1
+      build:
+          context: .
+          dockerfile: ./dockerfiles/nginx_dockerfile
+      networks:
+          - docker_netaxe
+      ports:
+          - "31103:80"
+
+    # 前端
+    ipam-web:
+      image: registry.cn-hangzhou.aliyuncs.com/netaxe/ipam-web:1.0
+      build:
+          context: .
+          dockerfile: ./dockerfiles/single_web_dockerfile
+      ports:
+          - "32082:80"
+      networks:
+          - docker_netaxe
+      restart: always
+
+networks:
+  docker_netaxe:
+    external: true
