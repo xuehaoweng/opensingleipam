@@ -27,7 +27,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'django-insecure-1hoyyz)v$99z2r8oxf&p&v!9(y$9vijy28m2(m$y!xuq%kv2#l'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 SECURE_CROSS_ORIGIN_OPENER_POLICY = 'None'
 ALLOWED_HOSTS = ["*"]
 # 设置项是否开启URL访问地址后面不为/跳转至带有/的路径
