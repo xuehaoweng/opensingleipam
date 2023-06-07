@@ -33,3 +33,7 @@ services:
       networks:
           - docker_netaxe
       restart: always
+
+networks:
+  docker_netaxe:
+    external: true
