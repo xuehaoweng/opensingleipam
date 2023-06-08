@@ -328,11 +328,6 @@ DATABASES = {
         'USER': config.mysql_user,
         'PASSWORD': config.mysql_password,
         'PORT': config.mysql_port,
-        'TEST_CHARSET': 'utf8',
-        'TEST_COLLATION': 'utf8_general_ci',
-        'TEST': {'NAME': 'test_netops',
-                 'CHARTSET': 'utf8',
-                 'COLLATION': 'utf8_general_ci'},
         'OPTIONS': {
             "init_command": "SET default_storage_engine='INNODB'",
 

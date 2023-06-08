@@ -29,7 +29,7 @@ services:
           context: .
           dockerfile: ./dockerfiles/web_dockerfile
       ports:
-          - "32082:80"
+          - "32203:80"
       networks:
           - docker_netaxe
       restart: always
