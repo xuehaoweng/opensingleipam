@@ -324,13 +324,14 @@ DATABASES = {
     'default': {
         'NAME': config.mysql_db,
         'ENGINE': 'django.db.backends.mysql',
-        'HOST': config.mysql_host,
         'USER': config.mysql_user,
+        'HOST': config.mysql_host,
         'PASSWORD': config.mysql_password,
         'PORT': config.mysql_port,
+        'CONN_MAX_AGE': 21600,
+        'ATOMIC_REQUESTS': True,
         'OPTIONS': {
-            "init_command": "SET default_storage_engine='INNODB'",
-
+            # 'charset': 'utf8mb4',
         }
     },
 }
