@@ -84,6 +84,12 @@ class Config:
         self.mongodb_port = data['mongodb_port']
         self.mongodb_user = data['mongodb_user']
         self.mongodb_password = data['mongodb_password']
+        self.mq_host = data['mq_host']
+        self.mq_username = data['mq_username']
+        self.mq_password = data['mq_password']
+        self.mq_port = data['mq_port']
+        self.queue = data['queue']
+        self.log_config_filename = data["log_config_filename"]
 
     # 单例模式
     def __new__(cls):
