@@ -1,12 +1,8 @@
 #!/bin/bash
 
-python manage.py collectstatic --noinput
-python manage.py makemigrations
-python manage.py migrate
 web(){
 #    mkdir -p /app/logs/celery_logs
     mkdir -p /var/log/supervisor
-    rm -rf /app/logs/celery_logs/w*.log
     rm -rf *.pid
     echo 'uwsgi done'
     supervisord -n -c /app/supervisord_prd.conf

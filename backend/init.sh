@@ -1,5 +1,4 @@
 #!/bin/bash
-import os
 python3 manage.py makemigrations users
 python3 manage.py migrate users
 python3 manage.py makemigrations
