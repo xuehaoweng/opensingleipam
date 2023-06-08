@@ -48,7 +48,6 @@ def load_config_files() -> dict:
         raise RuntimeError(
             f"Could not find either {DEFAULTS_FILENAME} or {CONFIG_FILENAME}"
         )
-
     return data
 
 
@@ -79,7 +78,6 @@ class Config:
         self.nacos_port = data['nacos_port']
         self.project_name = data['project_name']
         self.url_prefix = data['url_prefix']
-        self.mongodb_url = data['mongodb_url']
         self.mongodb_host = data['mongodb_host']
         self.mongodb_port = data['mongodb_port']
         self.mongodb_user = data['mongodb_user']
@@ -89,6 +87,8 @@ class Config:
         self.mq_password = data['mq_password']
         self.mq_port = data['mq_port']
         self.queue = data['queue']
+        self.routing_key = data['routing_key']
+        self.queue_qos = data['queue_qos']
         self.log_config_filename = data["log_config_filename"]
 
     # 单例模式
