@@ -7,12 +7,12 @@
     "server_ip": "1.1.1.1",
     "server_port": 8000,
     "local_dev": false,
-    "mq_host": "1.1.1.1",
-    "mq_username": "admin",
-    "mq_password": "admin",
+    "mq_host": "rabbitmq",
+    "mq_username": "adminnetaxe",
+    "mq_password": "netaxeadmin",
     "mq_port": 5672,
-    "nacos": "10.254.1.1",
-    "nacos_port": 31848,
+    "nacos": "nacos",
+    "nacos_port": 8848,
     "queue": "ipam",
     "exchange": "netaxe",
     "allow_origins": ["http://10.254.2.1:8880"],
@@ -25,13 +25,9 @@
     "default_webhook_headers": {
       "Content-Type": "application/json"
     },
-    "custom_webhooks": "backend/plugins/extensibles/custom_webhooks/",
-    "mongodb_url": "mongodb+srv://<username>:<password>@<url>/<db>?retryWrites=true&w=majority",
     "mongodb_host": "10.254.0.110",
     "mongodb_port": 27017,
     "mongodb_user": "root",
     "mongodb_password": "70uUceCVL1gf",
-    "drivers": "backend/plugins/drivers/",
     "log_config_filename": "config/log-config.yml",
-    "msg_gateway": "http://msggateway.netaxe.svc:8000"
   }

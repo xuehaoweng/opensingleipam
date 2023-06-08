@@ -6,14 +6,14 @@ services:
       build:
           context: .
           dockerfile: ./dockerfiles/backend_dockerfile
-      command: sh start.sh web
+      command: sh init.sh
       networks:
           - docker_netaxe
       restart: always
 
     # nginx代理
-    ipam-backend-nginx:
-      image: registry.cn-hangzhou.aliyuncs.com/netaxe/ipam-backend-nginx:1.23.1
+    ipam-nginx:
+      image: registry.cn-hangzhou.aliyuncs.com/netaxe/ipam-nginx:1.23.1
       build:
           context: .
           dockerfile: ./dockerfiles/nginx_dockerfile
