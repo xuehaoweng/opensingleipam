@@ -33,5 +33,5 @@
     "mongodb_port": 27017,
     "mongodb_user": "root",
     "mongodb_password": "70uUceCVL1gf",
-    "log_config_filename": "config/log-config.yml"
+    "log_config_filename": "../config/log-config.yml"
   }
