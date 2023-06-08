@@ -74,6 +74,7 @@ class Config:
         self.nacos_port = data['nacos_port']
         self.virtual_host = data['virtual_host']
         self.version = data['version']
+        self.exchange = data['exchange']
         self.local_dev = data['local_dev']
         self.server_ip = data['server_ip']
         self.server_port = data['server_port']
