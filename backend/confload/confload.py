@@ -61,6 +61,10 @@ class Config:
         self.__configDict = {}
         self.healthy = ""
         self.data = data
+        self.backend_ip = data['backend_ip']
+        self.backend_port = data['backend_port']
+        self.web_ip = data['web_ip']
+        self.web_port = data['backend_port']
         # self.drivers = data['drivers']
         self.mysql_db = data['mysql_db']
         self.mysql_host = data['mysql_host']
@@ -76,8 +80,6 @@ class Config:
         self.version = data['version']
         self.exchange = data['exchange']
         self.local_dev = data['local_dev']
-        self.server_ip = data['server_ip']
-        self.server_port = data['server_port']
         self.project_name = data['project_name']
         self.url_prefix = data['url_prefix']
         self.mongodb_url = data['mongodb_url']
