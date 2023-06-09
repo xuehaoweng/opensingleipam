@@ -44,6 +44,7 @@ fi
 
 # 创建docker_netaxe网络
 docker network inspect docker_netaxe
+
 if [ $? -ne 0 ]; then
     docker network create  --subnet=1.1.38.0/24 \
     --ip-range=1.1.38.0/24 \

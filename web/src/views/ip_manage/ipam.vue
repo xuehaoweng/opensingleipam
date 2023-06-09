@@ -90,11 +90,11 @@
       </n-space>
       <n-scrollbar trigger="none" style="max-height: 500px" @scroll="handleScroll">
         <div>
-          <n-button style="width: 50px;padding:5px 0;margin: 0 10px 10px 0px;" :id="ip_info.address"
+          <n-button style="width: 80px;padding:5px 0;margin: 0 10px 10px 0px;" :id="ip_info.address"
             v-for="ip_info of subnet_info.result_list" :key="ip_info.address" @click="subnet_click(ip_info.address)"
             :value="ip_info.address" :class="port_style(ip_info.tag)
               ">
-            {{ ip_info.address.split('.')[3] }}
+            {{ ip_info.address.split('.')[3] || ip_info.address }}
           </n-button>
         </div>
       </n-scrollbar>
