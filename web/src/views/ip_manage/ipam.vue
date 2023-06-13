@@ -865,7 +865,7 @@ export default defineComponent({
         var start_ipaddress = subnet_info.value['next_page_url'].split('?start=')[1]
         request_next_status.value = true
         get({
-          url: getSubnetAddress + subnet_info.value['subnet_id'] + '/ip_address',
+          url: getSubnetAddress + subnet_info.value['subnet_id'] + '/ip_address/',
           data: () => {
             return {
               start: decodeURIComponent(start_ipaddress), // # 取消冒号转义
@@ -914,7 +914,7 @@ export default defineComponent({
             // //console.log('v6网段')
             add_subnet_form.value.master_subnet_id = option.label + '-' + option.id
             get({
-              url: getSubnetAddress + option.id + '/ip_address',
+              url: getSubnetAddress + option.id + '/ip_address/',
               data: () => {
                 return {
                   // subnet_used: option.label,
@@ -989,7 +989,7 @@ export default defineComponent({
             } else {
               add_subnet_form.value.master_subnet_id = option.label + '-' + option.id
               get({
-                url: getSubnetAddress + option.id + '/ip_address',
+                url: getSubnetAddress + option.id + '/ip_address/',
                 data: () => {
                   return {
                     // subnet_used: option.label,
@@ -1460,7 +1460,7 @@ export default defineComponent({
     function refresh_subnet(subnet_id) {
       subnet_id = subnet_info.value['subnet_id']
       get({
-        url: getSubnetAddress + subnet_id + '/ip_address',
+        url: getSubnetAddress + subnet_id + '/ip_address/',
         data: () => {
           return {
             // subnet_used: subnet_info.value['subnet'],
