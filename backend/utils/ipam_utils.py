@@ -96,7 +96,7 @@ class IpAmForNetwork(object):
     def generate_netops_tree(self, some_subnets):
         '''
         :param some_subnets: 一系列子网信息
-        :return: 一个4层树结构
+        :return: 一个5层树结构
         '''
         res_list = some_subnets
         res_list_cp = res_list.copy()
@@ -108,61 +108,93 @@ class IpAmForNetwork(object):
         no3_id_list = []
         no3_list = []
         no4_id_list = []
+        no5_id_list = []
+        no6_id_list = []
         no4_list = []
-        for i in res_list:
-            # print(i)
-            if i['master_subnet_id'] == None:
-                no1_id_list.append(i['id'])
+        no5_list = []
+        no6_list = []
+
+        for e in res_list:
+            # master_subnet_id为空--一级结构
+            if e['master_subnet_id'] is None:
+                no1_id_list.append(e['id'])
                 tmp = {}
-                tmp['id'] = i['id']
-                tmp['master_subnet_id'] = i['master_subnet_id']
-                tmp['label'] = str(i['subnet'])
+                tmp['id'] = e['id']
+                tmp['master_subnet_id'] = e['master_subnet_id']
+                tmp['label'] = str(e['subnet'])
                 tmp['children'] = []
                 no1_list.append(tmp)
-                res_list_cp.remove(i)
+                res_list_cp.remove(e)
 
         # print(len(no1_id_list), len(res_list_cp))
         # print(no1_id_list)
 
-        for i in res_list:
-            if i['master_subnet_id'] in no1_id_list:
-                no2_id_list.append(i['id'])
+        for second in res_list:
+            if second['master_subnet_id'] in no1_id_list:
+                no2_id_list.append(second['id'])
                 tmp = {}
-                tmp['id'] = i['id']
-                tmp['master_subnet_id'] = i['master_subnet_id']
-                tmp['label'] = str(i['subnet'])
+                tmp['id'] = second['id']
+                tmp['master_subnet_id'] = second['master_subnet_id']
+                tmp['label'] = str(second['subnet'])
                 tmp['children'] = []
                 no2_list.append(tmp)
-                res_list_cp.remove(i)
+                res_list_cp.remove(second)
 
         # print(len(no2_id_list), len(res_list_cp))
 
-        for i in res_list:
-            if i['master_subnet_id'] in no2_id_list:
-                no3_id_list.append(i['id'])
+        for third in res_list:
+            if third['master_subnet_id'] in no2_id_list:
+                no3_id_list.append(third['id'])
                 tmp = {}
-                tmp['id'] = i['id']
-                tmp['master_subnet_id'] = i['master_subnet_id']
-                tmp['label'] = str(i['subnet'])
+                tmp['id'] = third['id']
+                tmp['master_subnet_id'] = third['master_subnet_id']
+                tmp['label'] = str(third['subnet'])
                 tmp['children'] = []
                 no3_list.append(tmp)
-                res_list_cp.remove(i)
+                res_list_cp.remove(third)
 
         # print(len(no3_id_list), len(res_list_cp))
 
-        for i in res_list:
-            if i['master_subnet_id'] in no3_id_list:
-                no4_id_list.append(i['id'])
+        for four in res_list:
+            if four['master_subnet_id'] in no3_id_list:
+                no4_id_list.append(four['id'])
                 tmp = {}
-                tmp['id'] = i['id']
-                tmp['master_subnet_id'] = i['master_subnet_id']
-                tmp['label'] = str(i['subnet'])
+                tmp['id'] = four['id']
+                tmp['master_subnet_id'] = four['master_subnet_id']
+                tmp['label'] = str(four['subnet'])
                 tmp['children'] = []
                 no4_list.append(tmp)
-                res_list_cp.remove(i)
+                res_list_cp.remove(four)
+        for five in res_list:
+            if five['master_subnet_id'] in no4_id_list:
+                no5_id_list.append(five['id'])
+                tmp = {}
+                tmp['id'] = five['id']
+                tmp['master_subnet_id'] = five['master_subnet_id']
+                tmp['label'] = str(five['subnet'])
+                tmp['children'] = []
+                no5_list.append(tmp)
+                res_list_cp.remove(five)
 
+        for six in res_list:
+            if six['master_subnet_id'] in no5_id_list:
+                no6_id_list.append(six['id'])
+                tmp = {}
+                tmp['id'] = six['id']
+                tmp['master_subnet_id'] = six['master_subnet_id']
+                tmp['label'] = str(six['subnet'])
+                tmp['children'] = []
+                no6_list.append(tmp)
+                res_list_cp.remove(six)
         # print(len(no4_id_list), len(res_list_cp))
-
+        for i in no5_list:
+            for j in no6_list:
+                if j["master_subnet_id"] == i["id"]:
+                    i['children'].append(j)
+        for i in no4_list:
+            for j in no5_list:
+                if j["master_subnet_id"] == i["id"]:
+                    i['children'].append(j)
         for i in no3_list:
             for j in no4_list:
                 if j["master_subnet_id"] == i["id"]:

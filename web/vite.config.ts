@@ -98,7 +98,10 @@ export default ({mode}) => {
     if (mode === 'staging') {
         return Object.assign(
             {
-                base: '/admin-work/',
+                base: '/',
+                debug:false,
+                devtools:false,
+                productionTip:false
             },
             config
         )
