@@ -259,7 +259,7 @@ class IpAddress(models.Model):
             #         ip_address=row[1].strip(),
             # ).exists():
             instance = ipaddress_model(
-                ip_address=row[1].strip(),backend/open_ipam/models.py
+                ip_address=row[1].strip(),
                 description=description,
                 tag=row[2]
             )
