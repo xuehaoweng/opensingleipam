@@ -1,7 +1,8 @@
 import router, { constantRoutes } from '../router'
-import Cookies from 'js-cookie'
+// import Cookies from 'js-cookie'
 import { get } from '@/api/http'
-import { baseAddress, getMenuListByRoleId, WebRouter } from '@/api/url'
+// getMenuListByRoleId
+import { baseAddress, WebRouter } from '@/api/url'
 import { RouteRecordRaw } from 'vue-router'
 import { isExternal, mapTwoLevelRouter, toHump } from '.'
 import { Layout } from '@/components'
@@ -9,7 +10,8 @@ import layoutStore from '@/store'
 import { defineAsyncComponent } from 'vue'
 import LoadingComponent from '../components/loading/index.vue'
 import defaultRouteJson from '../../default_menu.json'
-import { ADMIN_WORK_USER_INFO_KEY, ADMIN_WORK_BUTTON_AUTH, ADMIN_WORK_S_TENANT } from '@/store/keys'
+// ADMIN_WORK_USER_INFO_KEY, ADMIN_WORK_BUTTON_AUTH,
+import { ADMIN_WORK_S_TENANT } from '@/store/keys'
 const navigateID = localStorage.getItem(ADMIN_WORK_S_TENANT)
 interface OriginRoute {
   name: unknown
@@ -41,14 +43,13 @@ function getRoutes() {
     return get({
       url: baseAddress + WebRouter,
       method: 'GET',
-      data: { parent__isnull: true, navigate__id: navigateID }
+      data: { parent__isnull: true, navigate__id: navigateID },
     }).then((res: any) => {
       return generatorRoutes(res.results)
     })
-  }else {
+  } else {
     return generatorRoutes(defaultRouteJson.menu)
   }
-
 }
 
 function getComponent(it: OriginRoute) {
@@ -67,7 +68,7 @@ function getCharCount(str: string, char: string) {
 }
 
 function isMenu(path: string) {
-  return getCharCount(path, '\/') === 1
+  return getCharCount(path, '/') === 1
 }
 
 function getNameByUrl(path: string) {
@@ -85,7 +86,7 @@ function generatorRoutes(res: Array<OriginRoute>) {
       name: getNameByUrl(path),
       hidden: !!it.hidden,
       component: it.web_path && isMenu(it.web_path) ? Layout : getComponent(it),
-      
+
       meta: {
         title: it.name,
         affix: !!it.affix,
@@ -104,30 +105,30 @@ function generatorRoutes(res: Array<OriginRoute>) {
 
 const whiteRoutes: string[] = ['/login', '/404', '/403', '/500']
 
-function isTokenExpired(): boolean {
-  const token = Cookies.get('netops-token')
-  return !!token
-}
+// function isTokenExpired(): boolean {
+//   const token = Cookies.get('netops-token')
+//   return !!token
+// }
 router.beforeEach(async (to) => {
   // console.log('import.meta.env.VITE_LOCAL_ROUTER',import.meta.env.VITE_LOCAL_ROUTER)
   if (whiteRoutes.includes(to.path)) {
     return true
   } else {
     const isEmptyRoute = layoutStore.isEmptyPermissionRoute()
-    console.log(isEmptyRoute)
+    // console.log(isEmptyRoute)
     if (isEmptyRoute) {
       const accessRoutes: Array<RouteRecordRaw> = []
       let webRoutes: any = []
 
-        if (!import.meta.env.VITE_LOCAL_ROUTER) {
-          webRoutes = await getRoutes()
-        } else {
-          // //console.log(defaultRouteJson.menu)
-          // 本地 rundev加载
-          webRoutes = generatorRoutes(defaultRouteJson.menu)
-          //console.log('webRoutes', webRoutes)
-        }
-        
+      if (!import.meta.env.VITE_LOCAL_ROUTER) {
+        webRoutes = await getRoutes()
+      } else {
+        // //console.log(defaultRouteJson.menu)
+        // 本地 rundev加载
+        webRoutes = generatorRoutes(defaultRouteJson.menu)
+        //console.log('webRoutes', webRoutes)
+      }
+
       // const tempRoutes = await getRoutes()
       accessRoutes.push(...webRoutes)
       const mapRoutes = mapTwoLevelRouter(accessRoutes)
@@ -141,7 +142,6 @@ router.beforeEach(async (to) => {
       } as RouteRecordRaw)
       layoutStore.initPermissionRoute([...constantRoutes, ...accessRoutes])
       return { ...to, replace: true }
-
     } else {
       return true
     }

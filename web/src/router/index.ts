@@ -95,7 +95,7 @@ export const constantRoutes = [
   //     },
   //   ],
   // },
-  
+
   {
     path: '/404',
     name: '404',
