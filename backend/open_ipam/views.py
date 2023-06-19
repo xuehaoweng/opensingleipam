@@ -1,7 +1,7 @@
 import json
 import time
 
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django_filters.rest_framework import DjangoFilterBackend
 from netaddr import iter_iprange
 from rest_framework import serializers, filters
@@ -193,6 +193,7 @@ class SubnetAddressView(ListAPIView):
 class IpAmSubnetTreeView(APIView):
     def get(self, request):
         get_params = request.GET.dict()
+        # print(get_params)
         if 'subnet' in get_params:
             ip_am_network = IpAmForNetwork()
             res_list = list(Subnet.objects.all().order_by('subnet').values())
@@ -205,6 +206,16 @@ class IpAmSubnetTreeView(APIView):
             tags = TagsModelSerializer(tag_choices, many=True)
             res = {'data': tags.data, 'code': 200, 'count': len(tags.data)}
             return JsonResponse(res, safe=True)
+        # 获取导出网段
+        else:
+            tmp = Subnet.objects.all().order_by('subnet')
+            tmp_serializer = SubnetSerializer(tmp, many=True)
+            # download_res_list = sorted(tmp_serializer, key=lambda e: e['id'], reverse=False)
+            # print(download_res_list)
+            res = {'data': tmp_serializer.data, 'code': 200, 'count': len(tmp_serializer.data)}
+            return JsonResponse(res, safe=True)
+
+        # return HttpResponse("ok")
 
 
 # 地址操作 增删改查

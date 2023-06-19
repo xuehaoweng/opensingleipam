@@ -173,10 +173,10 @@
     <ModalDialog ref="dispatch_modalDialog" title="地址分配" @confirm="dispatch_confirm">
       <template #content>
         <!-- <li>目前自动化手段采集的数据只能作为辅助决策，现网操作请慎之又慎，注意流程、宣贯、人工复核
-        </li>
-        <li>目前自动化工作还处于起步阶段，平台稳定性、功能模块逻辑、设备自身BUG都会导致数据偏移，尤其设备自身bug或版本差异导致的结果差异很难在前期功能开发过程中一一发现识别
-        </li>
-        <li><span style="color: red">总之: 不能再出事，我们已不能再承受</span></li> -->
+                </li>
+                <li>目前自动化工作还处于起步阶段，平台稳定性、功能模块逻辑、设备自身BUG都会导致数据偏移，尤其设备自身bug或版本差异导致的结果差异很难在前期功能开发过程中一一发现识别
+                </li>
+                <li><span style="color: red">总之: 不能再出事，我们已不能再承受</span></li> -->
         <!--        <n-button type="info" size="small" style="float: right" @click="export_ipam_detail">导出EXCEL</n-button>-->
         <n-data-table
           :data="
@@ -206,10 +206,10 @@
     >
       <template #content>
         <!-- <li>目前自动化手段采集的数据只能作为辅助决策，现网操作请慎之又慎，注意流程、宣贯、人工复核
-        </li>
-        <li>目前自动化工作还处于起步阶段，平台稳定性、功能模块逻辑、设备自身BUG都会导致数据偏移，尤其设备自身bug或版本差异导致的结果差异很难在前期功能开发过程中一一发现识别
-        </li>
-        <li><span style="color: red">总之: 不能再出事，我们已不能再承受</span></li> -->
+                </li>
+                <li>目前自动化工作还处于起步阶段，平台稳定性、功能模块逻辑、设备自身BUG都会导致数据偏移，尤其设备自身bug或版本差异导致的结果差异很难在前期功能开发过程中一一发现识别
+                </li>
+                <li><span style="color: red">总之: 不能再出事，我们已不能再承受</span></li> -->
         <!--        <n-button type="info" size="small" style="float: right" @click="export_ipam_detail">导出EXCEL</n-button>-->
         <!--        <template #content>-->
         <DataForm
@@ -1173,13 +1173,9 @@
         // new_static_formdata.append('csrfmiddlewaretoken', csrf_token)
         get({
           url: getSubnetTree,
-          // headers:{"Cookie":`csrftoken=${csrf_token};sessionid=${sessionid}`},
-          // headers:{"Cookie":'csrftoken=HXeYFfBzHjqkdIgNWzFs4ibmV0M7riy2Z2AWeosEx1mcpMpYqtfGv5DkAo7qcJyd;sessionid=2qbfl3p0q0umylf4qrwfz3x0r6d4d5wp'},
           data: () => {
             return {
               download: 1,
-
-              // csrfmiddlewaretoken:csrf_token
             }
           },
         }).then((res) => {
@@ -1277,6 +1273,9 @@
         }).then((res) => {
           if (res.code == 200) {
             add_root_show.value = false
+            add_root_form.value.add_description = ''
+            add_root_form.value.master_subnet_id = ''
+            add_root_form.value.add_subnet = ''
             message.success(res.message)
           } else {
             message.error(res.message)
@@ -1308,6 +1307,9 @@
           if (res.code == 200) {
             message.success(res.message)
             add_subnet_show.value = false
+            add_subnet_form.value.add_description = ''
+            add_subnet_form.value.master_subnet_id = ''
+            add_subnet_form.value.add_subnet = ''
           } else {
             message.error(res.message)
           }
@@ -1695,7 +1697,8 @@
       }
 
       function create_subnet() {
-        //console.log('master_subnet_id', add_root_form.value['master_subnet_id'])
+        // console.log('add_form', add_root_form.value)
+        // console.log('add_subnet_form', add_subnet_form.value)
         if (add_subnet_form.value['master_subnet_id']) {
           //console.log('新增子网')
           add_subnet_show.value = true
@@ -1760,6 +1763,7 @@
           })
         })
       }
+
       function formate_date() {
         var now = new Date() // 获取当前时间
         var year = now.getFullYear() // 获取年份
@@ -1770,6 +1774,7 @@
         var second = now.getSeconds()
         return year + '-' + month + '-' + day + '-' + hour + '-' + minute + '-' + second
       }
+
       onMounted(get_tree_data)
       onMounted(get_tags)
       return {
