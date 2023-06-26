@@ -35,5 +35,8 @@
     "mongodb_port": 27017,
     "mongodb_user": "root",
     "mongodb_password": "70uUceCVL1gf",
-    "log_config_filename": "../config/log-config.yml"
+    "log_config_filename": "../config/log-config.yml",
+    "phpipam_url": "http://10.254.0.115/",
+    "phpipam_username": "netops_api",
+    "phpipam_password": "KlpR9qUm3a"
   }

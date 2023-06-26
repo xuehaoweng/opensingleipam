@@ -2,19 +2,15 @@
 import requests
 from requests.auth import HTTPBasicAuth
 
-ipam = {
-    "url": "http://10.254.0.115/",
-    "username": "netops_api",
-    "password": "KlpR9qUm3a",
-}
+from confload.confload import config
 
 
 class PhpIpamApi():
     def __init__(self):
-        self.base_url = ipam['url']
+        self.base_url = config.phpipam_url
         self.data = {
-            "username": ipam['username'],
-            "password": ipam['password'],
+            "username": config.phpipam_username,
+            "password": config.phpipam_password,
         }
         self.auth = HTTPBasicAuth(self.data['username'], self.data['password'])
         self.token = self.get_token()
@@ -63,6 +59,7 @@ class PhpIpamApi():
                     # print(tmp)
                     subnet_addresses.append(tmp)
             else:
+                # phpipam地址同步：网段下无地址或异常-该网段不处理
                 print('查询网段下的IP异常', subnet_info['subnet'])
                 pass
 
