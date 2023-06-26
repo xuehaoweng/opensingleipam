@@ -95,6 +95,9 @@ class Config:
         self.routing_key = data['routing_key']
         self.queue_qos = data['queue_qos']
         self.log_config_filename = data["log_config_filename"]
+        self.phpipam_url = data["phpipam_url"]
+        self.phpipam_username = data["phpipam_username"]
+        self.phpipam_password = data["phpipam_password"]
 
     # 单例模式
     def __new__(cls):
