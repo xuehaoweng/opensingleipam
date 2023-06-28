@@ -21,7 +21,6 @@ from open_ipam.serializers import HostsResponseSerializer, SubnetSerializer, IpA
 from open_ipam.tasks import ip_am_update_main, ipam_update_task, query, recycle_ip_main, sync_ipam_subnet_main, \
     sync_ipam_ipaddress_main
 from open_ipam.tools.ipam_pagenations import HostsListPagination
-from open_ipam.tools.self_generics import AsyncGenericAPIView
 from utils.custom_pagination import LargeResultsSetPagination
 from utils.custom_viewset_base import CustomViewBase
 from utils.ipam_utils import IpAmForNetwork
@@ -370,7 +369,7 @@ class IpRecycleAsyncTask(APIView):
 
 
 # phpipam子网段同步任务异步接口
-class PhpIpSubnetAsyncTask(AsyncGenericAPIView):
+class PhpIpSubnetAsyncTask(APIView):
     async def async_main(self):
         await asyncio.gather(sync_ipam_subnet_main())
 

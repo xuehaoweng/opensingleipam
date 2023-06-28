@@ -823,7 +823,6 @@
       const pattern = ref('')
       const subnet_search_keyword = ref('')
       const room_group_name = ref('')
-      const update_data = ref('')
       const start_num = ref(0)
 
       function doSend(message) {
@@ -1353,7 +1352,7 @@
       function handleCloseTag(item) {
         ////console.log('closeitem', item)
         // colors = colors.filter(function(item) {    return item != "red"});
-        subnet_tag_list.forEach(function (ele, index, arr) {
+        subnet_tag_list.forEach(function (ele, index) {
           if (ele === item) {
             subnet_tag_list.splice(index, 1)
           }
@@ -1451,7 +1450,7 @@
           post({
             url: PostAddressHandel,
             data: formdata,
-          }).then((res) => {
+          }).then(() => {
             message.success('回收成功')
 
             nextTick(() => {
@@ -1536,7 +1535,7 @@
         post({
           url: PostAddressHandel, // TODO
           data: dispatch_data,
-        }).then((res) => {
+        }).then(() => {
           dispatch_modalDialog.value!.toggle()
           message.success('分配成功')
           nextTick(() => {
@@ -1752,7 +1751,7 @@
         post({
           url: PostAddressHandel,
           data: post_data,
-        }).then((res) => {
+        }).then(() => {
           //console.log('change_desc', res)
           message.info('更新网段描述成功')
           // change_desc_form.value['subnet_id'] = ''
