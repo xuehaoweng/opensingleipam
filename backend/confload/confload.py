@@ -63,8 +63,7 @@ class Config:
         self.data = data
         self.backend_ip = data['backend_ip']
         self.backend_port = data['backend_port']
-        self.web_ip = data['web_ip']
-        self.web_port = data['web_port']
+        self.web_url = data['web_url']
         # self.drivers = data['drivers']
         self.mysql_db = data['mysql_db']
         self.mysql_host = data['mysql_host']

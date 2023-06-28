@@ -11,10 +11,12 @@
 -------------------------------------------------
 使用pika 封装一个消息总线类，实现消息发布订阅、消息确认、qos、公平队列、限速、消息广播功能
 """
+import functools
 import pika
 import time
 from queue import Queue
 from threading import Lock
+from pika.exchange_type import ExchangeType
 from confload.confload import config
 
 
@@ -71,9 +73,15 @@ class SyncMessageBus:
 
     def publish(self, queue, routing_key, body, properties=None, durable=True, auto_delete=False):
         channel = self.get_channel()
-        result = channel.queue_declare(queue=queue, durable=durable, auto_delete=auto_delete)
-        queue_name = result.method.queue
-        channel.queue_bind(exchange=self.exchange, queue=queue_name, routing_key=routing_key)
+        channel.exchange_declare(
+            exchange=self.exchange,
+            exchange_type=ExchangeType.topic,
+            durable=durable,
+            auto_delete=auto_delete
+        )
+        channel.queue_declare(queue=queue, durable=durable, auto_delete=auto_delete)
+        channel.queue_bind(queue=queue, exchange=self.exchange, routing_key=routing_key)
+        channel.basic_qos(prefetch_count=self.queue_qos)
         channel.basic_publish(
             exchange=self.exchange,
             routing_key=routing_key,
@@ -81,23 +89,27 @@ class SyncMessageBus:
             properties=properties
         )
 
-    def subscribe(self, queue, routing_key, exchange_type, callback, durable=True, auto_delete=False):
+    def subscribe(self, queue, routing_key, callback, durable=True, auto_delete=False):
         """
         exchange_type  topic  fanout
         """
         channel = self.get_channel()
-        channel.basic_qos(prefetch_count=self.queue_qos)
         channel.exchange_declare(
             exchange=self.exchange,
-            exchange_type=exchange_type,
+            exchange_type=ExchangeType.topic,
             durable=durable,
             auto_delete=auto_delete
         )
-        result = channel.queue_declare(queue=queue, durable=durable, auto_delete=auto_delete)
-        queue_name = result.method.queue
-        channel.queue_bind(exchange=self.exchange, queue=queue_name, routing_key=routing_key)
-        channel.basic_consume(queue=queue_name, on_message_callback=callback, auto_ack=True)
-        channel.start_consuming()
+        channel.queue_declare(queue=queue, durable=durable, auto_delete=auto_delete)
+        channel.queue_bind(queue=queue, exchange=self.exchange, routing_key=routing_key)
+        channel.basic_qos(prefetch_count=self.queue_qos)
+        on_message_callback = functools.partial(
+            callback, userdata='on_message_userdata')
+        channel.basic_consume(queue=queue, on_message_callback=on_message_callback)
+        try:
+            channel.start_consuming()
+        except KeyboardInterrupt:
+            channel.stop_consuming()
 
     def ack_message(self, delivery_tag):
         channel = self.get_channel()
