@@ -9,10 +9,11 @@ import pathlib
 import time
 from datetime import datetime, timedelta, date
 
+import requests
 from celery import shared_task, current_app
 
 from IpamV1 import settings
-from celery_once import QueueOnce
+# from celery_once import QueueOnce
 from open_ipam.models import IpAddress, Subnet
 from open_ipam.tools.phpipam import PhpIpamApi
 
@@ -23,6 +24,7 @@ from IpamV1.settings import BASE_DIR
 from netaddr import IPNetwork, IPSet
 
 logger = logging.getLogger('ipam')
+
 
 # 写入记录日志
 def write_log(filename, datas):
@@ -37,8 +39,9 @@ def write_log(filename, datas):
             f.write(row)
     logger.info('Write Log Done!')
 
+
 # 获取所有任务task
-@shared_task(base=QueueOnce, once={'graceful': True})
+# @shared_task(base=QueueOnce, once={'graceful': True})
 def get_tasks():
     celery_app = current_app
     # celery_tasks = [task for task in celery_app.tasks if not task.startswith('celery.')]
@@ -47,37 +50,40 @@ def get_tasks():
     return json.dumps({'result': res})
 
 
-@shared_task(base=QueueOnce, once={'graceful': True})
-def ipam_scan():
+# @shared_task(base=QueueOnce, once={'graceful': True})
+async def ipam_scan(whole_ipaddress):
+    list(map(create_ip_address, whole_ipaddress))
     pass
 
 
 # 数据同步-同步原有phpipam的IP地址数据
-@shared_task(base=QueueOnce, once={'graceful': True})
-def sync_ipam_ipaddress_main():
+# @shared_task(base=QueueOnce, once={'graceful': True})
+async def sync_ipam_ipaddress_main():
     task_start_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
-    logger.info('同步PHPIPAM地址记录开始', task_start_time)
+    logger.info('同步PHPIPAM地址记录开始' + task_start_time)
     start_time = time.time()
     phpipamapi = PhpIpamApi()
     # 根据subnet下的ip汇总的总地址记录表
     all_subnet_ipaddress = phpipamapi.get_all_addresses_by_subnet()
     all_subnet_ipaddress_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
-    logger.info('同步all_subnet_ipaddress_time', all_subnet_ipaddress_time)
+    logger.info('同步all_subnet_ipaddress_time' + all_subnet_ipaddress_time)
     whole_ipaddress = []
     for subnet_address in all_subnet_ipaddress:
         for address_info in subnet_address:
             address_list = subnet_address[address_info]
             whole_ipaddress.extend(address_list)
     whole_ipaddress_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
-    logger.info('同步whole_ipaddress_time', whole_ipaddress_time)
+    logger.info('同步whole_ipaddress_time' + whole_ipaddress_time)
     # map形式切换for循环的ip地址新增逻辑
-    list(map(create_ip_address, whole_ipaddress))
+    # list(map(create_ip_address, whole_ipaddress))
+    await ipam_scan(whole_ipaddress)
 
     end_time = time.time()
     total_time = int(end_time - start_time)
     task_end_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
     logger.info('花费总时间{}s'.format(total_time))
-    logger.info('同步PHPIPAM地址记录结束', task_end_time)
+    logger.info('同步PHPIPAM地址记录结束' + task_end_time)
+
 
 # 新建ip地址实例
 def create_ip_address(address):
@@ -92,23 +98,23 @@ def create_ip_address(address):
                                                                                      'note'] is not None else
             str(date.today())
         }
-        IpAddress.objects.create(**address_kwargs)
+        ip_instance = IpAddress.objects.get(ip_address=address['ip'])
+        if ip_instance:
+            return
+        else:
+            IpAddress.objects.create(**address_kwargs)
     except Exception as e:
         IpamMongoOps.insert_fail_ip(address)
-        logger.info('插入地址失败', e, address)
+        logger.info('插入地址失败' + str(e) + str(address))
 
 
 # 数据同步-同步原有phpipam的网段数据
-@shared_task(base=QueueOnce, once={'graceful': True})
-def sync_ipam_subnet_main():
-    task_start_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
-    logger.info('同步PHPIPAM网段记录开始', task_start_time)
-    start_time = time.time()
-    # Subnet.objects.filter(description__icontains="")
+# @shared_task(base=QueueOnce, once={'graceful': True})
+async def sync_ipam_subnet_subtask():
     phpipamapi = PhpIpamApi()
     all_subnets = phpipamapi.get_all_subnets()
     first_level_list = []
-    # logger.info(len(all_subnets))
+    second_level = []
     for subnet in all_subnets:
         if subnet['masterSubnetId'] == '0':
             # logger.info('一级结构')
@@ -128,10 +134,6 @@ def sync_ipam_subnet_main():
                 IpamMongoOps.insert_fail_subnet(subnet['subnet'])
                 logger.info('插入失败{}'.format(e))
             all_subnets.remove(subnet)
-
-    second_level = []
-    # 遍历剩下不等于ROOT的网段
-
     for second_subnet in all_subnets:
         # 插入非ROOT网段结构
         second_kwargs = {
@@ -149,15 +151,22 @@ def sync_ipam_subnet_main():
             IpamMongoOps.insert_fail_subnet(second_subnet['subnet'])
             logger.info('插入失败{}'.format(e))
 
+
+async def sync_ipam_subnet_main():
+    task_start_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
+    logger.info('同步PHPIPAM网段记录开始' + task_start_time)
+    start_time = time.time()
+    await sync_ipam_subnet_subtask()
     end_time = time.time()
     total_time = int(end_time - start_time)
     task_end_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
     logger.info('花费总时间{}s'.format(total_time))
-    logger.info('同步PHPIPAM网段记录结束', task_end_time)
+    logger.info('同步PHPIPAM网段记录结束' + task_end_time)
+    return "同步PHPIPAM网段记录结束"
 
 
 # IPAM地址全网更新子任务
-@shared_task(base=QueueOnce, once={'graceful': True})
+# @shared_task(base=QueueOnce, once={'graceful': True})
 async def ip_am_update_sub_task(ip):
     ip_address_model = IpAddress
     # 文件名-操作失败的IP地址写入文件中
@@ -257,7 +266,7 @@ async def ip_am_update_sub_task(ip):
 
 
 # IPAM地址全网更新主任务main
-@shared_task(base=QueueOnce, once={'graceful': True})
+# @shared_task(base=QueueOnce, once={'graceful': True})
 async def ip_am_update_main():
     task_start_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
     start_time = time.time()
@@ -293,7 +302,7 @@ async def ip_am_update_main():
                 ip_am_update_tasks.remove(tasks)
     logger.info('子任务执行完毕')
     total_time = int((time.time() - start_time) / 60)
-    logger.info('花费总时间', total_time)
+    logger.info('花费总时间' + str(total_time))
 
     ip_fail_counts = IpamMongoOps.get_coll_account(coll='netops_ipam_fail_ip')  # 失败地址表
     ip_add_counts = IpamMongoOps.get_coll_account(coll='netops_ipam_success_ip')  # 新增地址表
@@ -320,10 +329,11 @@ async def ip_am_update_main():
 
 
 # async+await异步模式
-@shared_task(base=QueueOnce, once={'graceful': True})
+# @shared_task(base=QueueOnce, once={'graceful': True})
 def ipam_update_task():
     loop = asyncio.get_event_loop()
-    loop.run_until_complete(ip_am_update_main())
+    loop.create_task(ip_am_update_main())
+    # loop.run_until_complete(ip_am_update_main())
 
 
 # 定时回收地址
@@ -335,8 +345,9 @@ def ipam_update_task():
 
 
 # 地址回收任务
-@shared_task(base=QueueOnce, once={'graceful': True})
-def recycle_ip_main():
+# @shared_task(base=QueueOnce, once={'graceful': True})
+
+async def recycle_ip_main():
     # 近一天未在线、三天不在线、10天不在线、30天不在线、60天不在线、90天不在线
     start_time = time.strftime('%Y-%m-%d-%H-%M-%S', time.localtime())
     start_message = f"IPAM回收任务开始, 开始时间: {start_time} "
@@ -395,6 +406,7 @@ def recycle_ip_main():
     whole_subnet_list = Subnet.objects.all()
     for subnet_instance in whole_subnet_list:
         # 排除特定网段
+
         if subnet_white_list not in subnet_white_list:
             ip_instance_list = subnet_instance.ipaddress_set.all()
             for ip_instance in ip_instance_list:
@@ -474,10 +486,10 @@ def recycle_ip_main():
 
 
 #  特定网段新增描述信息
-@shared_task(base=QueueOnce, once={'graceful': True})
+# @shared_task(base=QueueOnce, once={'graceful': True})
 def descript_special_subnet_task():
     task_start_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
-    logger.info('特定网段描述更新开始', task_start_time)
+    logger.info('特定网段描述更新开始' + task_start_time)
     # special_subnet_list = get_special_subnet()
     special_subnet_list = []
     # 循环special_subnet_list 添加描述信息
@@ -503,8 +515,19 @@ def descript_special_subnet_task():
     send_mail(receive_email_addr=email_addr, email_subject=email_subject, email_text_content=email_text_content)
 
     task_end_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
-    logger.info('特定网段描述更新成功', task_end_time)
+    logger.info('特定网段描述更新成功' + task_end_time)
     logger.info(email_text_content)
+
+
+async def query_data(n, url):
+    print("task %s" % n)
+    loop = asyncio.get_event_loop()
+    resp = await loop.run_in_executor(None, requests.get, url)
+    print(url, resp.status_code)
+
+
+async def query(n, url):
+    await query_data(n, url)
 
 
 if __name__ == '__main__':

@@ -14,7 +14,7 @@ WORKDIR /app
 # 指定setuptools的版本，必须指定，新版本有兼容问题
 RUN set -ex \
     && pip install setuptools_scm -i https://mirrors.aliyun.com/pypi/simple/ \
-    && pip install --upgrade pip setuptools==45.2.0 -i https://mirrors.aliyun.com/pypi/simple/ \
+    && pip install --upgrade pip setuptools==57.5.0 -i https://mirrors.aliyun.com/pypi/simple/ \
     && pip install -r requirements.txt -i https://mirrors.aliyun.com/pypi/simple/ \
     && rm -rf /var/cache/yum/*
 

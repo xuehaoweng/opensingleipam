@@ -1,7 +1,10 @@
+import asyncio
 import json
 import time
 
+from asgiref.sync import sync_to_async, async_to_sync
 from django.http import JsonResponse, HttpResponse
+from django.views import View
 from django_filters.rest_framework import DjangoFilterBackend
 from netaddr import iter_iprange
 from rest_framework import serializers, filters
@@ -15,7 +18,10 @@ from rest_framework.views import APIView
 from open_ipam.models import Subnet, IpAddress, TagsModel
 from open_ipam.serializers import HostsResponseSerializer, SubnetSerializer, IpAddressSerializer, \
     TagsModelSerializer
+from open_ipam.tasks import ip_am_update_main, ipam_update_task, query, recycle_ip_main, sync_ipam_subnet_main, \
+    sync_ipam_ipaddress_main
 from open_ipam.tools.ipam_pagenations import HostsListPagination
+from open_ipam.tools.self_generics import AsyncGenericAPIView
 from utils.custom_pagination import LargeResultsSetPagination
 from utils.custom_viewset_base import CustomViewBase
 from utils.ipam_utils import IpAmForNetwork
@@ -330,3 +336,72 @@ class IpAmHandelView(APIView):
             except Exception as e:
                 res = {'message': e, 'code': 400, }
                 return JsonResponse(res, safe=True)
+
+
+# 地址更新异步接口
+class IpUpdateAsyncTask(APIView):
+    def post(self, request):
+        try:
+            update_tasks = [ip_am_update_main()]
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            loop.run_until_complete(asyncio.wait(update_tasks))
+            loop.close()
+            res = {'message': "地址更新任务下发成功", 'code': 200, }
+        except Exception as e:
+            res = {'message': e, 'code': 400, }
+        return JsonResponse(res, safe=True)
+
+
+# 地址回收异步接口
+class IpRecycleAsyncTask(APIView):
+    def post(self, request):
+        try:
+            recycle_tasks = [recycle_ip_main()]
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            loop.run_until_complete(asyncio.wait(recycle_tasks))
+            loop.close()
+            res = {'message': "地址回收任务下发成功", 'code': 200, }
+        except Exception as e:
+            res = {'message': e, 'code': 400, }
+
+        return JsonResponse(res, safe=True)
+
+
+# phpipam子网段同步任务异步接口
+class PhpIpSubnetAsyncTask(AsyncGenericAPIView):
+    async def async_main(self):
+        await asyncio.gather(sync_ipam_subnet_main())
+
+    def post(self, request):
+        try:
+            # result = await asyncio.run(sync_ipam_subnet_main())
+            # print(result)
+            # subnet_async_tasks = [sync_ipam_subnet_main()]
+            # loop = asyncio.new_event_loop()  # 创建循环
+            # asyncio.set_event_loop(loop)  # 设置事件循环
+            # loop.run_until_complete(sync_ipam_subnet_main())
+            # loop.close()
+            asyncio.run(self.async_main())
+            res = {'message': "phpipam子网段同步任务下发成功", 'code': 200, }
+        except Exception as e:
+            res = {'message': e, 'code': 400, }
+        print(res)
+        return JsonResponse(res, safe=True)
+
+
+# phpipam地址信息同步任务异步接口
+class PhpIpAsyncTask(APIView):
+    def post(self, request):
+        try:
+            ip_address_async_tasks = [sync_ipam_ipaddress_main()]
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            loop.run_until_complete(asyncio.wait(ip_address_async_tasks))
+            loop.close()
+            res = {'message': "phpipam地址信息同步任务下发成功", 'code': 200, }
+        except Exception as e:
+            res = {'message': e, 'code': 400, }
+
+        return JsonResponse(res, safe=True)

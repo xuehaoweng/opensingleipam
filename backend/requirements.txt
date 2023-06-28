@@ -1,4 +1,4 @@
-Django==4.0.10
+Django==4.1
 PyMySQL==1.0.2
 django-admin-interface==0.24.2
 django-import-export==2.9.0
