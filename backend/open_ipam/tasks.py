@@ -98,7 +98,7 @@ def create_ip_address(address):
                                                                                      'note'] is not None else
             str(date.today())
         }
-        ip_instance = IpAddress.objects.get(ip_address=address['ip'])
+        ip_instance = IpAddress.objects.filter(ip_address=address['ip'])
         if ip_instance:
             return
         else:
