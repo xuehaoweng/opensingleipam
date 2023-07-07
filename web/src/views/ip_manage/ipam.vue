@@ -73,6 +73,12 @@
                 </n-icon>
               </n-button>
             </div>
+            <div>
+              <!-- <span class="bold-attribute"></span> -->
+              <n-button type="error" style="font-size: 20px" @click="delete_subnet()" size="tiny">
+                删除网段
+              </n-button>
+            </div>
           </div>
         </n-gi>
         <n-gi>
@@ -308,10 +314,11 @@
 </template>
 
 <script lang="ts">
-  import { TreeOption } from 'naive-ui'
-  import { getSubnetTree, getSubnetAddress, PostAddressHandel } from '@/api/url'
+  import { TreeOption, useDialog, NPopconfirm } from 'naive-ui'
+  import { getSubnetTree, getSubnetAddress, PostAddressHandel, getSubnetList } from '@/api/url'
   import usePost from '@/hooks/usePost'
   import useGet from '@/hooks/useGet'
+  import useDelete from '@/hooks/useDelete'
   import {
     defineComponent,
     h,
@@ -323,6 +330,7 @@
     VNodeChild,
   } from 'vue'
   import { Pencil as CashIcon } from '@vicons/ionicons5'
+
   import {
     DataTableColumn,
     NInput,
@@ -345,6 +353,7 @@
 
     setup() {
       // const roll = ref(null)
+      const dialog = useDialog()
       const used_port = []
       const channelsChart = ref<HTMLDivElement | null>(null)
       const button_roll = ref<HTMLDivElement | null>(null)
@@ -514,6 +523,7 @@
       ]
       const get = useGet()
       const post = usePost()
+      const deleteFunc = useDelete()
       const message = useMessage()
       const modalDialog = ref<ModalDialogType | null>(null)
       const table_modalDialog = ref<ModalDialogType | null>(null)
@@ -1733,29 +1743,64 @@
         change_desc_form.value['subnet_id'] = subnet_info.value['subnet_id']
         change_desc_form.value['description'] = subnet_info.value['desc']
       }
-
+      function DeleteSubnetConfirm() {
+        // console.log('删除网段id', subnet_info.value['subnet_id'])
+        deleteFunc({ url: getSubnetList + subnet_info.value['subnet_id'] }).then((res) => {
+          console.log(res)
+          if (res.code == 204) {
+            message.info('网段删除成功')
+          } else {
+            message.error('网段删除失败')
+          }
+          get_tree_data()
+          dialog.destroyAll()
+        })
+      }
+      function delete_subnet() {
+        // console.log('删除网段id', subnet_info.value['subnet_id'])
+        dialog.warning({
+          title: '删除网段警告提示',
+          content: () => {
+            return h(
+              NPopconfirm,
+              {
+                onPositiveClick: () => DeleteSubnetConfirm(),
+                negativeText: '取消',
+                positiveText: '确认',
+              },
+              {
+                trigger: () =>
+                  h(NButton, { type: 'error', size: 'tiny' }, () => h('span', {}, '删除网段')),
+                default: () =>
+                  h(
+                    'span',
+                    {},
+                    '确认删除该网段吗?删除网段会同时删除网段下的IP地址信息,请谨慎操作!'
+                  ),
+              }
+            )
+          },
+          action: () => '',
+          // positiveText: '确认',
+          // negativeText: '取消',
+          // // 弹窗的按钮的属性领用对象的形式可以使用所有按钮属性
+          // positiveButtonProps: { type: 'primary' },
+          // onPositiveClick: () => {
+          //   message.success('确认')
+          // },
+        })
+      }
       function change_desc_submit() {
-        //console.log(change_desc_form.value)
         const post_data = new FormData()
-        // var master_subnet_id = add_subnet_form.value['master_subnet_id'].split('-')[1]
-        // if (master_subnet_id === 'ROOT') {
-        //   master_subnet_id = '0'
-        // }
-
         post_data.append('subnet_id', change_desc_form.value['subnet_id'])
         post_data.append('description', change_desc_form.value['description'])
         post_data.append('room_group_name', room_group_name.value)
-        // let csrf_token = Cookies.get('csrftoken')
-        // post_data.append('csrfmiddlewaretoken', csrf_token)
-        //TODO
         post({
           url: PostAddressHandel,
           data: post_data,
         }).then(() => {
-          //console.log('change_desc', res)
           message.info('更新网段描述成功')
-          // change_desc_form.value['subnet_id'] = ''
-          // change_desc_form.value['description'] = ''
+
           change_desc_show.value = false
           nextTick(() => {
             refresh_subnet(refresh_subnet_id.value)
@@ -1777,9 +1822,12 @@
       onMounted(get_tree_data)
       onMounted(get_tags)
       return {
+        deleteFunc,
         formate_date,
         change_desc_submit,
         change_desc,
+        delete_subnet,
+        DeleteSubnetConfirm,
         get_tags,
         create_subnet,
         set_tree_data,
