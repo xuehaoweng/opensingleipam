@@ -328,7 +328,9 @@ DATABASES = {
         'PASSWORD': config.mysql_password,
         'PORT': config.mysql_port,
         'CONN_MAX_AGE': 21600,
-        # 'ATOMIC_REQUESTS': True,
+        'ATOMIC_REQUESTS': True,
+        'TEST_CHARSET': 'utf8mb4',
+        'TEST_COLLATION': 'utf8mb4_general_ci',
         'OPTIONS': {
             # 'charset': 'utf8mb4',
         }
