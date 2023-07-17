@@ -1745,7 +1745,7 @@
       }
       function DeleteSubnetConfirm() {
         // console.log('删除网段id', subnet_info.value['subnet_id'])
-        deleteFunc({ url: getSubnetList + subnet_info.value['subnet_id'] }).then((res) => {
+        deleteFunc({ url: getSubnetList + subnet_info.value['subnet_id'] +'/'}).then((res) => {
           console.log(res)
           if (res.code == 204) {
             message.info('网段删除成功')
