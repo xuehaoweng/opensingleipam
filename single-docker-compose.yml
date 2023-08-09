@@ -16,7 +16,7 @@ services:
           context: .
           dockerfile: ./dockerfiles/nginx_dockerfile
       ports:
-          - "31103:80"
+          - "31113:80"
 
     # 前端
     ipam-web:
@@ -25,5 +25,5 @@ services:
           context: .
           dockerfile: ./dockerfiles/single_web_dockerfile
       ports:
-          - "32082:80"
+          - "32092:80"
       restart: always
