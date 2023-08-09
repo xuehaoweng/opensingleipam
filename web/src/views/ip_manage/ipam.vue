@@ -13,6 +13,9 @@
         <n-button size="tiny" type="info" @click="open_export" style="float: left"
           >导出网段
         </n-button>
+<!--        <n-button size="tiny" type="info" @click="open_export" style="float: left"-->
+<!--          >扫描网段-->
+<!--        </n-button>-->
         <n-button size="tiny" type="info" style="float: right" @click="create_subnet()"
           >新增网段
         </n-button>

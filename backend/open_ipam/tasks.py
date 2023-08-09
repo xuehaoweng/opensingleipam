@@ -336,11 +336,23 @@ def ipam_update_task():
 
 
 # 根据前端传递的网段，进行网段下的地址迭代并添加
-def auto_scan_task():
-    ip_instance = IPNetwork('10.254.1.0/26')
+def auto_scan_task(subnet):
+    '''
+    创建网段
+    创建网段下的ip
+    '''
+    add_kwargs = {
+        "name": subnet,
+        "mask": subnet.split("/")[1],
+        "subnet": subnet,
+        "description": f'auto_scan_' + subnet,
+        "master_subnet": master_subnet_id
+    }
+    ip_instance = IPNetwork(subnet)
     ip_list = [i for i in ip_instance.iter_hosts()]
     print(ip_list)
-
+    for ip in ip_list:
+        print(ip)
 
 
 # 定时回收地址

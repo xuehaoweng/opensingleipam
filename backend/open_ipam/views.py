@@ -19,7 +19,7 @@ from open_ipam.models import Subnet, IpAddress, TagsModel
 from open_ipam.serializers import HostsResponseSerializer, SubnetSerializer, IpAddressSerializer, \
     TagsModelSerializer
 from open_ipam.tasks import ip_am_update_main, ipam_update_task, query, recycle_ip_main, sync_ipam_subnet_main, \
-    sync_ipam_ipaddress_main
+    sync_ipam_ipaddress_main, auto_scan_task
 from open_ipam.tools.ipam_pagenations import HostsListPagination
 from utils.custom_pagination import LargeResultsSetPagination
 from utils.custom_viewset_base import CustomViewBase
@@ -235,6 +235,7 @@ class IpAmHandelView(APIView):
         add_description = request.POST.get('add_description')
         add_master_id = request.POST.get('add_master_id')
         room_group_name = request.POST.get('room_group_name')
+        auto_scan_subnet = request.POST.get('auto_scan_subnet')
         if update:
             update_list = json.loads(update)
             for update_info in update_list:
@@ -335,6 +336,15 @@ class IpAmHandelView(APIView):
             except Exception as e:
                 res = {'message': e, 'code': 400, }
                 return JsonResponse(res, safe=True)
+
+        if auto_scan_subnet:
+            subnet_list = [str(i.subnet) for i in Subnet.objects.all()]
+            if auto_scan_subnet in subnet_list:
+                res = {'message': '当前网段已经存在,不执行扫描', 'code': 400, }
+            else:
+                auto_scan_task(auto_scan_subnet)
+                res = {'message': '网段扫描成功,新增网段{}成功添加{}个地址'.format('', 0), 'code': 200, }
+            return JsonResponse(res, safe=True)
 
 
 # 地址更新异步接口
