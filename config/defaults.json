@@ -35,6 +35,7 @@
   "mongodb_host": "mongo",
   "mongodb_port": 27017,
   "mongodb_user": "root",
+  "mongodb_url": "mongodb://root:70uUceCVL1gf@mongo:27017/?authSource=admin&readPreference=primary&directConnection=true&ssl=false",
   "mongodb_password": "70uUceCVL1gf",
   "redis_host": "redis-cache",
   "redis_port": 6379,
