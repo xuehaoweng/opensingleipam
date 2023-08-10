@@ -61,9 +61,12 @@
 
 ### 应用部署
 
-> 部署前置条件：Mysql数据库
+>
 
 ```
+Mysql数据库已经包含在一键部署脚本中
+
+
 git clone https://gitee.com/NetAxeClub/IPAM.git
 
 cp config/default.json config/config.json
