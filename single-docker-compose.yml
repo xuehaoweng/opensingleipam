@@ -2,7 +2,7 @@ version: "3.7"
 services:
     # 后端入口
     ipam-single-backend:
-      image: registry.cn-hangzhou.aliyuncs.com/netaxe/ipam-backend:1.0
+      image: registry.cn-hangzhou.aliyuncs.com/netaxe/ipam-single-backend:1.0
       build:
           context: .
           dockerfile: ./dockerfiles/backend_dockerfile
@@ -11,7 +11,7 @@ services:
 
     # nginx代理
     ipam-single-backend-nginx:
-      image: registry.cn-hangzhou.aliyuncs.com/netaxe/ipam-backend-nginx:1.23.1
+      image: registry.cn-hangzhou.aliyuncs.com/netaxe/ipam-single-backend-nginx:1.23.1
       build:
           context: .
           dockerfile: ./dockerfiles/single_nginx_dockerfile
@@ -19,8 +19,8 @@ services:
           - "31113:80"
 
     # 前端
-    ipam-web:
-      image: registry.cn-hangzhou.aliyuncs.com/netaxe/ipam-web:1.0
+    ipam-single-web:
+      image: registry.cn-hangzhou.aliyuncs.com/netaxe/ipam-single-web:1.0
       build:
           context: .
           dockerfile: ./dockerfiles/single_web_dockerfile
@@ -28,10 +28,10 @@ services:
           - "32092:80"
       restart: always
 
-    mysql-server:
+    single-mysql-server:
       image: registry.cn-hangzhou.aliyuncs.com/netaxe/mysql:5.7
       restart: always
-      container_name: mysql-server
+      container_name: single-mysql-server
       environment:
         TZ: Asia/Shanghai
         MYSQL_DATABASE: "ipam"
