@@ -27,3 +27,19 @@ services:
       ports:
           - "32092:80"
       restart: always
+
+    mysql-server:
+      image: registry.cn-hangzhou.aliyuncs.com/netaxe/mysql:5.7
+      restart: always
+      container_name: mysql-server
+      environment:
+        TZ: Asia/Shanghai
+        MYSQL_DATABASE: "ipam"
+        MYSQL_USER: "netaxe"
+        MYSQL_ROOT_PASSWORD: "root_devnet@2022"
+      volumes:
+        - ./my.cnf:/etc/mysql/my.cnf
+        - ./mysql_data:/var/lib/mysql
+      command: ['--character-set-server=utf8mb4', '--collation-server=utf8mb4_bin']
+      ports:
+        - "36306:3306"

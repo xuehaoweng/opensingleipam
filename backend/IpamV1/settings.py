@@ -337,16 +337,3 @@ DATABASES = {
     },
 }
 
-# email配置
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_USE_TLS = False
-EMAIL_USE_SSL = True
-EMAIL_HOST = 'mail.netaxemail.com.cn'
-EMAIL_PORT = 465
-EMAIL_HOST_USER = 'ccr_netops@***.com.cn'
-EMAIL_HOST_PASSWORD = '********'
-EMAIL_RECEIVE_USER = ['netaxe@netaxe.com']
-EMAIL_FROM_NAME = 'NETAXE网络自动化系统'
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
-
-REDIS_URL = "redis://:{}@{}:{}/".format(config.redis_pwd, config.redis_host, config.redis_port)

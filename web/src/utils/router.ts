@@ -126,7 +126,7 @@ router.beforeEach(async (to) => {
         // //console.log(defaultRouteJson.menu)
         // 本地 rundev加载
         webRoutes = generatorRoutes(defaultRouteJson.menu)
-        //console.log('webRoutes', webRoutes)
+        console.log('单应用本地加载')
       }
 
       // const tempRoutes = await getRoutes()

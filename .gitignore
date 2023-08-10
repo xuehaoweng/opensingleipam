@@ -15,3 +15,4 @@ web/components.d.ts
 .vscode
 readme.ignore.md
 config/config.json
+mysql_data
