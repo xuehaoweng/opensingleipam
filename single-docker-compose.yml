@@ -1,7 +1,7 @@
 version: "3.7"
 services:
     # 后端入口
-    ipam-backend:
+    ipam-single-backend:
       image: registry.cn-hangzhou.aliyuncs.com/netaxe/ipam-backend:1.0
       build:
           context: .
@@ -10,11 +10,11 @@ services:
       restart: always
 
     # nginx代理
-    ipam-backend-nginx:
+    ipam-single-backend-nginx:
       image: registry.cn-hangzhou.aliyuncs.com/netaxe/ipam-backend-nginx:1.23.1
       build:
           context: .
-          dockerfile: ./dockerfiles/nginx_dockerfile
+          dockerfile: ./dockerfiles/single_nginx_dockerfile
       ports:
           - "31113:80"
 
