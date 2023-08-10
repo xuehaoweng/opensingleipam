@@ -6,7 +6,7 @@ services:
       build:
           context: .
           dockerfile: ./dockerfiles/backend_dockerfile
-      command: sh init.sh
+      command: sh single-init.sh
       restart: always
 
     # nginx代理
