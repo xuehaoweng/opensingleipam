@@ -23,6 +23,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'IpamV1.settings')
 django.setup()
 from manager import app_manager_sync
 from confload.confload import config
+# from manager import app_manager_async
 BASE_DIR = os.path.dirname(__file__)
 # 定位到log日志文件
 log_path = os.path.join(BASE_DIR, 'logs')
@@ -59,6 +60,9 @@ def run_worker():
         register_menu()
         schedule.every(10).minutes.do(register_server)
         schedule.every(6).hours.do(register_menu)
+        # 基础平台发送任务给ipam队列、worker监听队列，消费地址更新、地址回收等任务
+        # 消费任务:地址更新、地址回收等任务
+        app_manager_sync.consume_task()
     except Exception as e:
         return e
 

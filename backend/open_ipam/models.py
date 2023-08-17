@@ -204,7 +204,8 @@ class Subnet(models.Model):
 
 
 class IpAddress(models.Model):
-    tag_choices = ((1, '空闲'), (2, '已分配已使用'), (3, '保留'), (4, '未分配已使用'), (6, '已分配未使用'), (7, '自定义空闲'))
+    tag_choices = (
+    (1, '空闲'), (2, '已分配已使用'), (3, '保留'), (4, '未分配已使用'), (6, '已分配未使用'), (7, '自定义空闲'))
     subnet = models.ForeignKey(Subnet, on_delete=models.CASCADE, verbose_name='归属子网段')
 
     ip_address = models.GenericIPAddressField(verbose_name='IP地址', unique=True)
@@ -214,6 +215,7 @@ class IpAddress(models.Model):
     lastScan = models.DateField(blank=True, auto_now=True, null=True)
     lastDiscovery = models.DateField(blank=True, auto_now=True, null=True)
     lastOnlineTime = models.DateField(blank=True, auto_now=True, null=True, verbose_name='最近在线时间')
+    xunmi_info = models.CharField(max_length=500, blank=True, verbose_name='寻觅回填信息', null=True)
 
     class Meta:
         # abstract = True
