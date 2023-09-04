@@ -10,6 +10,8 @@
                     2023/4/4 20:39
 -------------------------------------------------
 """
+from open_ipam.tasks import ip_am_update_main
 
-
-routes = {}
+routes = {
+    "ipaddr_update": ip_am_update_main,
+}

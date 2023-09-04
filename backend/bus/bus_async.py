@@ -41,10 +41,11 @@ class AsyncMessageBus:
             'topic': aio_pika.ExchangeType.TOPIC,
             'fanout': aio_pika.ExchangeType.FANOUT,
         }
+        arguments = {"x-max-priority": 10}
         self.connection = await aio_pika.connect_robust(host=self.host, port=self.port, login=self.username, password=self.password, virtualhost=self.virtual_host)
         self.channel = await self.connection.channel()
         self.exchange_obj = await self.channel.declare_exchange(self.exchange, exchange_type_map[exchange_type], durable=durable, auto_delete=auto_delete)
-        self.queue_obj = await self.channel.declare_queue(queue, durable=durable, auto_delete=auto_delete)
+        self.queue_obj = await self.channel.declare_queue(queue, durable=durable, auto_delete=auto_delete, arguments=arguments)
         await self.queue_obj.bind(self.exchange_obj, routing_key)
         await self.channel.set_qos(self.queue_qos)
         self.is_ready = True
