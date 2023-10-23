@@ -73,13 +73,14 @@ class SyncMessageBus:
 
     def publish(self, queue, routing_key, body, properties=None, durable=True, auto_delete=False):
         channel = self.get_channel()
+        arguments = {"x-max-priority": 10}
         channel.exchange_declare(
             exchange=self.exchange,
             exchange_type=ExchangeType.topic,
             durable=durable,
             auto_delete=auto_delete
         )
-        channel.queue_declare(queue=queue, durable=durable, auto_delete=auto_delete)
+        channel.queue_declare(queue=queue, durable=durable, auto_delete=auto_delete, arguments=arguments)
         channel.queue_bind(queue=queue, exchange=self.exchange, routing_key=routing_key)
         channel.basic_qos(prefetch_count=self.queue_qos)
         channel.basic_publish(
