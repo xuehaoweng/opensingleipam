@@ -2,7 +2,7 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
 from open_ipam.views import SubnetHostsView, AvailableIpView, SubnetApiViewSet, IpAddressApiViewSet, SubnetAddressView, \
-    IpAmSubnetTreeView, IpAmHandelView, IpUpdateAsyncTask, IpRecycleAsyncTask, PhpIpSubnetAsyncTask
+    IpAmSubnetTreeView, IpAmHandelView, IpUpdateAsyncTask, IpRecycleAsyncTask, PhpIpSubnetAsyncTask, IpamOpenAPI
 
 router = DefaultRouter()
 router.register(r'subnet_list', SubnetApiViewSet)  # 获取子网段列表
@@ -15,6 +15,7 @@ urlpatterns = [
     path("async_phpipam_subnet/", PhpIpSubnetAsyncTask.as_view(), name='async_phpipam_subnet'),
     # path(r'api/', include(router.urls)),
     path('subnet_tree/', IpAmSubnetTreeView.as_view(), name='subnet_tree'),
+    path('ipam_api/', IpamOpenAPI.as_view(), name='ipam_api'),
     path('address_handel/', IpAmHandelView.as_view(), name='address_handel'),
     path('subnet/<str:subnet_id>/ip_address/', SubnetAddressView.as_view(), name='subnet_ip_address'),
     # 供admin后台展示，暂未修改过多逻辑

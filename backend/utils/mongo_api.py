@@ -341,7 +341,7 @@ class IpamMongoOps(object):
         log_time = datetime.now().strftime("%Y-%m-%d")
         my_mongo = MongoOps(db='IPAMData', coll='netops_ipam_fail_ip')
         query_tmp = my_mongo.find(query_dict={'fail_ip': ip})
-        print(query_tmp)
+        # print(query_tmp)
         if query_tmp:
             if query_tmp[0]['log_time'] != log_time:
                 return 'update', my_mongo.update(filter={'fail_ip': ip}, update={"$set": {'log_time': log_time}})
@@ -424,6 +424,6 @@ class IpamMongoOps(object):
 
     # 插入同步phpipam失败的网段
     @staticmethod
-    def insert_fail_subnet(subnet):
+    def insert_fail_subnet(subnet, e):
         my_mongo = MongoOps(db='IPAMData', coll='sync_phpipam_fail_subnet')
-        my_mongo.insert({"subnet": subnet})
+        my_mongo.insert({"subnet": subnet, 'reason': e})

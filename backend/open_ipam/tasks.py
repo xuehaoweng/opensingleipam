@@ -50,33 +50,32 @@ def get_tasks():
     return json.dumps({'result': res})
 
 
-async def ipam_scan(whole_ipaddress):
+def ipam_scan(whole_ipaddress):
     list(map(create_ip_address, whole_ipaddress))
     pass
 
 
 # 数据同步-同步原有phpipam的IP地址数据
 
-async def sync_ipam_ipaddress_main():
+def sync_ipam_ipaddress_main():
     task_start_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
     logger.info('同步PHPIPAM地址记录开始' + task_start_time)
     start_time = time.time()
     phpipamapi = PhpIpamApi()
     # 根据subnet下的ip汇总的总地址记录表
-    all_subnet_ipaddress = phpipamapi.get_all_addresses_by_subnet()
-    all_subnet_ipaddress_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
-    logger.info('同步all_subnet_ipaddress_time' + all_subnet_ipaddress_time)
-    whole_ipaddress = []
-    for subnet_address in all_subnet_ipaddress:
-        for address_info in subnet_address:
-            address_list = subnet_address[address_info]
-            whole_ipaddress.extend(address_list)
-    whole_ipaddress_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
-    logger.info('同步whole_ipaddress_time' + whole_ipaddress_time)
-    # map形式切换for循环的ip地址新增逻辑
-    # list(map(create_ip_address, whole_ipaddress))
-    await ipam_scan(whole_ipaddress)
-
+    # all_subnet_ipaddress = phpipamapi.get_all_addresses_by_subnet()
+    # 获取网段列表
+    all_subnet = phpipamapi.get_all_subnets()
+    # whole_ipaddress = []
+    sum_count = 0
+    index_num = 0
+    for subnet_instance in all_subnet:
+        index_num+=1
+        address_list = phpipamapi.get_address_by_subnet_instance(subnet_instance)
+        logger.info(f"准备写入网段{subnet_instance['subnet']}下的地址,共计{len(address_list)}当前第{index_num}行网段")
+        sum_count += len(address_list)
+        ipam_scan(address_list)
+    logger.info(f'总计写入地址数目{sum_count}')
     end_time = time.time()
     total_time = int(end_time - start_time)
     task_end_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
@@ -87,6 +86,7 @@ async def sync_ipam_ipaddress_main():
 # 新建ip地址实例
 def create_ip_address(address):
     try:
+        # print(address)
         subnet_instance = Subnet.objects.filter(subnet_id=int(address['subnetId'])).first()
         address_kwargs = {
             "subnet": subnet_instance,
@@ -103,13 +103,13 @@ def create_ip_address(address):
         else:
             IpAddress.objects.create(**address_kwargs)
     except Exception as e:
-        IpamMongoOps.insert_fail_ip(address)
-        logger.info('插入地址失败' + str(e) + str(address))
+        IpamMongoOps.insert_fail_ip(str(address['ip']))
+        logger.info('插入地址失败' + str(e) + str(address['ip']))
 
 
 # 数据同步-同步原有phpipam的网段数据
 
-async def sync_ipam_subnet_subtask():
+def sync_ipam_subnet_subtask():
     phpipamapi = PhpIpamApi()
     all_subnets = phpipamapi.get_all_subnets()
     first_level_list = []
@@ -130,7 +130,7 @@ async def sync_ipam_subnet_subtask():
                 Subnet.objects.update_or_create(**kwargs)
             except Exception as e:
                 logger.info(subnet['subnet'])
-                IpamMongoOps.insert_fail_subnet(subnet['subnet'])
+                IpamMongoOps.insert_fail_subnet(subnet['subnet'], str(e))
                 logger.info('插入失败{}'.format(e))
             all_subnets.remove(subnet)
     for second_subnet in all_subnets:
@@ -147,15 +147,15 @@ async def sync_ipam_subnet_subtask():
             Subnet.objects.update_or_create(**second_kwargs)
         except Exception as e:
             logger.info(second_subnet['subnet'])
-            IpamMongoOps.insert_fail_subnet(second_subnet['subnet'])
+            IpamMongoOps.insert_fail_subnet(second_subnet['subnet'], str(e))
             logger.info('插入失败{}'.format(e))
 
 
-async def sync_ipam_subnet_main():
+def sync_ipam_subnet_main():
     task_start_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
     logger.info('同步PHPIPAM网段记录开始' + task_start_time)
     start_time = time.time()
-    await sync_ipam_subnet_subtask()
+    sync_ipam_subnet_subtask()
     end_time = time.time()
     total_time = int(end_time - start_time)
     task_end_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())

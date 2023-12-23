@@ -64,3 +64,21 @@ class PhpIpamApi():
                 pass
 
         return subnet_addresses
+
+    def get_address_by_subnet_instance(self, subnet_instance):
+        # 网段下的所有地址
+        address_list = []
+        tmp = {}
+        # 获取此网段所有IP地址明细[{},{}]
+        subnet_ipaddress_url = self.base_url + "api/myapp/subnets/{}/addresses/".format(subnet_instance['id'])
+        addr_res = requests.get(subnet_ipaddress_url, headers=self.headers)
+        if addr_res.ok:
+            if addr_res.json()['code'] == 200 and addr_res.json()['success'] == True:
+                address_res_list = addr_res.json()['data']
+                address_list = address_res_list
+        else:
+            # phpipam地址同步：网段下无地址或异常-该网段不处理
+            print('查询网段下的IP异常', subnet_instance['subnet'])
+            pass
+
+        return address_list

@@ -414,3 +414,43 @@ class PhpIpAsyncTask(APIView):
             res = {'message': e, 'code': 400, }
 
         return JsonResponse(res, safe=True)
+
+
+class IpamOpenAPI(APIView):
+    def post(self, request):
+        # 更新网段下的网络类型
+        update = request.POST.get('update')
+        subnet = request.POST.get('subnet')
+        network_type = request.POST.get('network_type')
+        # 查询网段或者地址的网络类型
+        search = request.POST.get('search')
+        search_key = request.POST.get('search_key')
+        if update:
+            try:
+                subnet_instance = Subnet.objects.filter(name=subnet).first()
+                subnet_instance.network_type = network_type
+                subnet_instance.save()
+                res = {'message': "更新网段网络类型成功", 'code': 200,
+                       'results': f'{subnet}-更新网络类型成功-{network_type}'}
+            except Exception as e:
+                res = {'message': str(e), 'code': 400, 'results': ''}
+            return JsonResponse(res, safe=True)
+        if search:
+            try:
+                if '/32' in search_key:
+                    ip_addr = search_key.split('/')[0]
+                    IpInstance = IpAddress.objects.filter(ip_address=ip_addr).first()
+                    print(IpInstance)
+                    belong_subnet = IpInstance.subnet
+                    print(belong_subnet)
+                    network_type_info = belong_subnet.network_type
+                    # 查询当前地址归属网段的网络类型字段
+                    pass
+                else:
+                    # 查询网段的网络类型字段
+                    subnet_instance = Subnet.objects.filter(name=search_key).values().first()
+                    network_type_info = subnet_instance['network_type']
+                res = {'message': "查询网络类型成功", 'code': 200, 'results': network_type_info}
+            except Exception as e:
+                res = {'message':str(e), 'code': 400, 'results': ''}
+            return JsonResponse(res, safe=True)

@@ -28,6 +28,7 @@ class Subnet(models.Model):
     mask = models.IntegerField(default=24, verbose_name='掩码')
     freehosts_percent = models.FloatField(verbose_name='空闲率', blank=True, null=True, default=0)
     description = models.CharField(max_length=300, blank=True, verbose_name='描述', null=True)
+    network_type = models.CharField(max_length=300, blank=True, verbose_name='网络类型', null=True)
 
     master_subnet = models.ForeignKey(
         'self',
