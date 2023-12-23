@@ -439,18 +439,16 @@ class IpamOpenAPI(APIView):
             try:
                 if '/32' in search_key:
                     ip_addr = search_key.split('/')[0]
-                    IpInstance = IpAddress.objects.filter(ip_address=ip_addr).first()
-                    print(IpInstance)
-                    belong_subnet = IpInstance.subnet
-                    print(belong_subnet)
-                    network_type_info = belong_subnet.network_type
                     # 查询当前地址归属网段的网络类型字段
-                    pass
+                    IpInstance = IpAddress.objects.filter(ip_address=ip_addr).first()
+                    search_key = str(IpInstance.subnet.name)
+                    subnet_data = Subnet.objects.filter(name=search_key).all()
                 else:
                     # 查询网段的网络类型字段
-                    subnet_instance = Subnet.objects.filter(name=search_key).values().first()
-                    network_type_info = subnet_instance['network_type']
-                res = {'message': "查询网络类型成功", 'code': 200, 'results': network_type_info}
+                    subnet_data = Subnet.objects.filter(name=search_key).all()
+
+                tmp_serializer = SubnetSerializer(subnet_data, many=True)
+                res = {'message': "查询网络类型成功", 'code': 200, 'results': tmp_serializer.data}
             except Exception as e:
-                res = {'message':str(e), 'code': 400, 'results': ''}
+                res = {'message': str(e), 'code': 400, 'results': ''}
             return JsonResponse(res, safe=True)
