@@ -121,6 +121,7 @@ class IpAmForNetwork(object):
                 tmp = {}
                 tmp['id'] = e['id']
                 tmp['master_subnet_id'] = e['master_subnet_id']
+                tmp['network_type'] = e['network_type']
                 tmp['label'] = str(e['subnet'])
                 tmp['children'] = []
                 no1_list.append(tmp)
@@ -135,6 +136,7 @@ class IpAmForNetwork(object):
                 tmp = {}
                 tmp['id'] = second['id']
                 tmp['master_subnet_id'] = second['master_subnet_id']
+                tmp['network_type'] = second['network_type']
                 tmp['label'] = str(second['subnet'])
                 tmp['children'] = []
                 no2_list.append(tmp)
@@ -148,6 +150,7 @@ class IpAmForNetwork(object):
                 tmp = {}
                 tmp['id'] = third['id']
                 tmp['master_subnet_id'] = third['master_subnet_id']
+                tmp['network_type'] = third['network_type']
                 tmp['label'] = str(third['subnet'])
                 tmp['children'] = []
                 no3_list.append(tmp)
@@ -161,6 +164,7 @@ class IpAmForNetwork(object):
                 tmp = {}
                 tmp['id'] = four['id']
                 tmp['master_subnet_id'] = four['master_subnet_id']
+                tmp['network_type'] = four['network_type']
                 tmp['label'] = str(four['subnet'])
                 tmp['children'] = []
                 no4_list.append(tmp)
@@ -171,6 +175,7 @@ class IpAmForNetwork(object):
                 tmp = {}
                 tmp['id'] = five['id']
                 tmp['master_subnet_id'] = five['master_subnet_id']
+                tmp['network_type'] = five['network_type']
                 tmp['label'] = str(five['subnet'])
                 tmp['children'] = []
                 no5_list.append(tmp)
@@ -182,6 +187,7 @@ class IpAmForNetwork(object):
                 tmp = {}
                 tmp['id'] = six['id']
                 tmp['master_subnet_id'] = six['master_subnet_id']
+                tmp['network_type'] = six['network_type']
                 tmp['label'] = str(six['subnet'])
                 tmp['children'] = []
                 no6_list.append(tmp)

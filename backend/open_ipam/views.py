@@ -425,6 +425,10 @@ class IpamOpenAPI(APIView):
         # 查询网段或者地址的网络类型
         search = request.POST.get('search')
         search_key = request.POST.get('search_key')
+        # 更新地址都寻觅信息
+        update_xunmi = request.POST.get('update_xunmi')
+        ip_addr = request.POST.get('ip_addr')
+        xunmi_info = request.POST.get('xunmi_info')
         if update:
             try:
                 subnet_instance = Subnet.objects.filter(name=subnet).first()
@@ -449,6 +453,17 @@ class IpamOpenAPI(APIView):
 
                 tmp_serializer = SubnetSerializer(subnet_data, many=True)
                 res = {'message': "查询网络类型成功", 'code': 200, 'results': tmp_serializer.data}
+            except Exception as e:
+                res = {'message': str(e), 'code': 400, 'results': ''}
+            return JsonResponse(res, safe=True)
+
+        if update_xunmi:
+            try:
+                ip_instance = IpAddress.objects.filter(ip_address=ip_addr).first()
+                ip_instance.xunmi_info = xunmi_info
+                ip_instance.save()
+                res = {'message': "更新地址的寻觅信息成功", 'code': 200,
+                       'results': f'{ip_addr}-更新地址的寻觅信息成功-{xunmi_info}'}
             except Exception as e:
                 res = {'message': str(e), 'code': 400, 'results': ''}
             return JsonResponse(res, safe=True)
