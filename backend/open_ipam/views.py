@@ -10,16 +10,18 @@ from netaddr import iter_iprange
 from rest_framework import serializers, filters
 from django.utils.translation import gettext_lazy as _
 from rest_framework.authentication import SessionAuthentication
+from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.generics import ListAPIView, get_object_or_404, RetrieveAPIView
 from rest_framework.permissions import DjangoModelPermissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from open_ipam.models import Subnet, IpAddress, TagsModel
+from open_ipam.models import Subnet, IpAddress, TagsModel, ApiKeyToken
 from open_ipam.serializers import HostsResponseSerializer, SubnetSerializer, IpAddressSerializer, \
     TagsModelSerializer
 from open_ipam.tasks import ip_am_update_main, ipam_update_task, query, recycle_ip_main, sync_ipam_subnet_main, \
     sync_ipam_ipaddress_main, auto_scan_task
+from open_ipam.tools.auth import ApiKeyAuthentication
 from open_ipam.tools.ipam_pagenations import HostsListPagination
 from utils.custom_pagination import LargeResultsSetPagination
 from utils.custom_viewset_base import CustomViewBase
@@ -416,7 +418,23 @@ class PhpIpAsyncTask(APIView):
         return JsonResponse(res, safe=True)
 
 
+def check_api_key(func):
+    auth_check = ApiKeyAuthentication()
+
+    def wrap(view, request):
+        if request.headers['Authorization']:
+            if 'api-key' in request.headers['Authorization']:
+                auth_check.authenticate(request)
+                return func(view, request)
+            else:
+                raise AuthenticationFailed('Invalid api-key header. No credentials provided.')
+        raise "Invalid Api key"
+
+    return wrap
+
+
 class IpamOpenAPI(APIView):
+    @check_api_key
     def post(self, request):
         post_params = request.data
         # 更新网段下的网络类型
@@ -468,3 +486,14 @@ class IpamOpenAPI(APIView):
             except Exception as e:
                 res = {'message': str(e), 'code': 400, 'results': ''}
             return JsonResponse(res, safe=True)
+
+    def get(self, request):
+        get_params = request.GET.dict()
+        api_key_token = ApiKeyToken()
+        # 获取传参平台
+        api_key_token.platform = get_params.get('platform', 'netops')
+        api_key_token.key = api_key_token.generate_key()
+        api_key_token.save()
+        # 返回响应
+        res = {'api-key': api_key_token.key, 'platform': api_key_token.platform, 'code': 200, 'results': 'success'}
+        return JsonResponse(res, safe=True)

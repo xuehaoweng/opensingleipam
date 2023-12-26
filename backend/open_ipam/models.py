@@ -1,11 +1,13 @@
 import csv
 import json
+import os
 import sys
 import time
 from io import StringIO
 
 from ipaddress import ip_address
 
+import binascii
 import openpyxl
 from django.db import models
 
@@ -206,7 +208,7 @@ class Subnet(models.Model):
 
 class IpAddress(models.Model):
     tag_choices = (
-    (1, '空闲'), (2, '已分配已使用'), (3, '保留'), (4, '未分配已使用'), (6, '已分配未使用'), (7, '自定义空闲'))
+        (1, '空闲'), (2, '已分配已使用'), (3, '保留'), (4, '未分配已使用'), (6, '已分配未使用'), (7, '自定义空闲'))
     subnet = models.ForeignKey(Subnet, on_delete=models.CASCADE, verbose_name='归属子网段')
 
     ip_address = models.GenericIPAddressField(verbose_name='IP地址', unique=True)
@@ -283,3 +285,20 @@ class TagsModel(models.Model):
         db_table = 'ipam_tags'  # 通过db_table自定义数据表名
         verbose_name = _('网络地址标签表')
         verbose_name_plural = _('网络地址标签表')
+
+
+class ApiKeyToken(models.Model):
+    key = models.CharField(max_length=40, primary_key=True, verbose_name='key')
+    platform = models.CharField(max_length=40, verbose_name='api-key运用平台', default='netops')
+    is_active = models.BooleanField(default=True, verbose_name='状态')
+
+    def save(self, *args, **kwargs):
+        if not self.key:
+            self.key = self.generate_key()
+        return super(ApiKeyToken, self).save(*args, **kwargs)
+
+    def generate_key(self):
+        return binascii.hexlify(os.urandom(20)).decode()
+
+    def __unicode__(self):
+        return self.key
