@@ -418,17 +418,18 @@ class PhpIpAsyncTask(APIView):
 
 class IpamOpenAPI(APIView):
     def post(self, request):
+        post_params = request.data
         # 更新网段下的网络类型
-        update = request.POST.get('update')
-        subnet = request.POST.get('subnet')
-        network_type = request.POST.get('network_type')
+        update = post_params.get('update')
+        subnet = post_params.get('subnet')
+        network_type = post_params.get('network_type')
         # 查询网段或者地址的网络类型
-        search = request.POST.get('search')
-        search_key = request.POST.get('search_key')
+        search = post_params.get('search')
+        search_key = post_params.get('search_key')
         # 更新地址都寻觅信息
-        update_xunmi = request.POST.get('update_xunmi')
-        ip_addr = request.POST.get('ip_addr')
-        xunmi_info = request.POST.get('xunmi_info')
+        update_xunmi = post_params.get('update_xunmi')
+        ip_addr = post_params.get('ip_addr')
+        xunmi_info = post_params.get('xunmi_info')
         if update:
             try:
                 subnet_instance = Subnet.objects.filter(name=subnet).first()

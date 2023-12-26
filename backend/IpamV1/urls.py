@@ -13,6 +13,7 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include, re_path
 from django.views.generic import RedirectView
@@ -24,13 +25,13 @@ from IpamV1 import settings
 from IpamV1.views import obtain_expiring_auth_token
 
 urlpatterns = [
-    path(r'favicon.ico', RedirectView.as_view(url=r'static/favicon.ico')),
-    path(r'ipam/docs/', include_docs_urls(title='NetOpsIpam接口文档')),
-    path('ipam/admin/', admin.site.urls),
-    path(r'ipam/api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    path(r'ipam/api-token/', obtain_expiring_auth_token, name='api-token'),
-    path(r'ipam/v1/', include('open_ipam.urls'), ),
-    path(r'ipam/users/', include('users.urls'), ),
-    re_path(r'^media/(?P<path>.*)', serve, {"document_root": settings.MEDIA_ROOT}),
-    re_path(r'^static/(?P<path>.*)$', serve, {'document_root': settings.STATIC_ROOT}, name='static'),
-]
+                  path(r'favicon.ico', RedirectView.as_view(url=r'static/favicon.ico')),
+                  path(r'ipam/docs/', include_docs_urls(title='NetOpsIpam接口文档')),
+                  path('ipam/admin/', admin.site.urls),
+                  path(r'ipam/api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+                  path(r'ipam/api-token/', obtain_expiring_auth_token, name='api-token'),
+                  path(r'ipam/v1/', include('open_ipam.urls'), ),
+                  path(r'ipam/users/', include('users.urls'), ),
+                  re_path(r'^media/(?P<path>.*)', serve, {"document_root": settings.MEDIA_ROOT}),
+                  re_path(r'^static/(?P<path>.*)$', serve, {'document_root': settings.STATIC_ROOT}, name='static'),
+              ] + static(settings.MEDIA_ROOT, document_root=settings.MEDIA_ROOT)
