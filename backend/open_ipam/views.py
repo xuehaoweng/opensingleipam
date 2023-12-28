@@ -1,6 +1,7 @@
 import asyncio
 import json
 import time
+from datetime import datetime
 
 from asgiref.sync import sync_to_async, async_to_sync
 from django.http import JsonResponse, HttpResponse
@@ -451,10 +452,14 @@ class IpamOpenAPI(APIView):
         if update:
             try:
                 subnet_instance = Subnet.objects.filter(name=subnet).first()
-                subnet_instance.network_type = network_type
-                subnet_instance.save()
-                res = {'message': "更新网段网络类型成功", 'code': 200,
-                       'results': f'{subnet}-更新网络类型成功-{network_type}'}
+                if subnet_instance:
+                    subnet_instance.network_type = network_type
+                    subnet_instance.save()
+                    res = {'message': "更新网段网络类型成功", 'code': 200,
+                           'results': f'{subnet}-更新网络类型成功-{network_type}'}
+                else:
+                    res = {'message': "更新网段网络类型失败", 'code': 400,
+                           'results': f'暂无该网段{subnet}'}
             except Exception as e:
                 res = {'message': str(e), 'code': 400, 'results': ''}
             return JsonResponse(res, safe=True)
@@ -479,10 +484,14 @@ class IpamOpenAPI(APIView):
         if update_xunmi:
             try:
                 ip_instance = IpAddress.objects.filter(ip_address=ip_addr).first()
-                ip_instance.xunmi_info = xunmi_info
-                ip_instance.save()
-                res = {'message': "更新地址的寻觅信息成功", 'code': 200,
-                       'results': f'{ip_addr}-更新地址的寻觅信息成功-{xunmi_info}'}
+                if ip_instance:
+                    ip_instance.xunmi_info = xunmi_info
+                    ip_instance.save()
+                    res = {'message': "更新地址的寻觅信息成功", 'code': 200,
+                           'results': f'{ip_addr}-更新地址的寻觅信息成功-{xunmi_info}'}
+                else:
+                    res = {'message': "更新地址的寻觅信息失败", 'code': 400,
+                           'results': f'暂无该地址-{ip_addr}-更新地址的寻觅信息失败'}
             except Exception as e:
                 res = {'message': str(e), 'code': 400, 'results': ''}
             return JsonResponse(res, safe=True)
@@ -490,9 +499,18 @@ class IpamOpenAPI(APIView):
     def get(self, request):
         get_params = request.GET.dict()
         api_key_token = ApiKeyToken()
+        platform = get_params.get('platform', 'netops')
         # 获取传参平台
-        api_key_token.platform = get_params.get('platform', 'netops')
-        api_key_token.key = api_key_token.generate_key()
+        api_key_token.platform = platform
+        # 先查询平台是否有存活的key
+        platform_key = ApiKeyToken.objects.filter(platform=platform).first()
+        if platform_key:
+            # 更新记录时间
+            api_key_token.key = platform_key.key
+            api_key_token.lastGetTime = datetime.now()
+        else:
+            # 新增key
+            api_key_token.key = api_key_token.generate_key()
         api_key_token.save()
         # 返回响应
         res = {'api-key': api_key_token.key, 'platform': api_key_token.platform, 'code': 200, 'results': 'success'}

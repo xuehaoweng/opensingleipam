@@ -291,6 +291,7 @@ class ApiKeyToken(models.Model):
     key = models.CharField(max_length=40, primary_key=True, verbose_name='key')
     platform = models.CharField(max_length=40, verbose_name='api-key运用平台', default='netops')
     is_active = models.BooleanField(default=True, verbose_name='状态')
+    lastGetTime = models.DateTimeField(blank=True, auto_now=True, null=True, verbose_name='最近查询时间')
 
     def save(self, *args, **kwargs):
         if not self.key:
@@ -302,3 +303,9 @@ class ApiKeyToken(models.Model):
 
     def __unicode__(self):
         return self.key
+
+    class Meta:
+        # abstract = True
+        db_table = 'ipam_apikey'  # 通过db_table自定义数据表名
+        verbose_name = _('ApiKey')
+        verbose_name_plural = _('ApiKey')
