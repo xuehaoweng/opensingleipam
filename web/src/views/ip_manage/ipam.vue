@@ -5,17 +5,17 @@
         <!--        <n-input v-model:value="subnet_search_keyword" placeholder="搜索" size="small"-->
         <!--                 @keyup.enter.native="tree_filter" style="width: 125px"/>-->
         <n-input v-model:value="pattern" placeholder="搜索" />
-        <n-button size="tiny" type="primary" @click="tree_filter">搜索</n-button>
-        <n-button size="tiny" type="warning" @click="clear_keywords">清除</n-button>
+        <n-button size="small" type="primary" @click="tree_filter">搜索</n-button>
+        <n-button size="small" type="warning" @click="clear_keywords">清除</n-button>
       </n-space>
       <div style="padding-top: 20px; border-top: 1px solid; border-right: 1px solid">
         <!--        <n-space justify="space-between">-->
         <n-button size="tiny" type="info" @click="open_export" style="float: left"
           >导出网段
         </n-button>
-<!--        <n-button size="tiny" type="info" @click="open_export" style="float: left"-->
-<!--          >扫描网段-->
-<!--        </n-button>-->
+        <!--        <n-button size="tiny" type="info" @click="open_export" style="float: left"-->
+        <!--          >扫描网段-->
+        <!--        </n-button>-->
         <n-button size="tiny" type="info" style="float: right" @click="create_subnet()"
           >新增网段
         </n-button>
@@ -27,7 +27,7 @@
           :node-props="nodeProps"
           :default-expand-all="false"
           :show-irrelevant-nodes="false"
-          :render-switcher-icon="renderSwitcherIcon"
+          :render-switcher-icon="renderSwitcherIconWithExpaned"
           style="height: 600px"
           :pattern="pattern"
           block-line
@@ -43,57 +43,69 @@
       v-show="detail_show"
       style="width: 70%; height: 100%; padding: 10px; float: right; border-top: 1px solid #000"
     >
-      <n-grid x-gap="2" :cols="2">
-        <n-gi>
-          <div class="bold-attribute" style="font-size: 20px">详情</div>
-          <div v-show="subnet_info.subnet.indexOf(':') !== -1" style="color: red"
-            >因ipv6网段地址较多,下图仅展示单次请求结果数据-可滚动查询下一分页
-          </div>
-          <div style="float: left; width: 100%">
-            <div>
-              <span class="bold-attribute">网段:</span>
-              {{ subnet_info.subnet }}
+      <div
+        style="
+          background: linear-gradient(to right, #74759b, #b5d3fa);
+          color: #d3d3d3;
+          margin-bottom: 10px;
+        "
+      >
+        <n-grid x-gap="2" :cols="2">
+          <n-gi>
+            <div style="margin-left: 10px">
+              <div class="bold-attribute" style="font-size: 20px">详情</div>
+              <div v-show="subnet_info.subnet.indexOf(':') !== -1" style="color: red"
+                >因ipv6网段地址较多,下图仅展示单次请求结果数据-可滚动查询下一分页
+              </div>
+              <div style="float: left; width: 100%">
+                <div>
+                  <span class="bold-attribute">网段:</span>
+                  {{ subnet_info.subnet }}
+                </div>
+                <div>
+                  <span class="bold-attribute">已使用:</span>
+                  {{ subnet_info.used }}%
+                </div>
+                <div>
+                  <span class="bold-attribute">未使用:</span>
+                  {{ subnet_info.freehosts }}%
+                </div>
+                <div>
+                  <span class="bold-attribute">使用率:</span>
+                  Used: {{ subnet_info.Used_percent }}% | Free: {{ subnet_info.freehosts_percent }}%
+                  | Total:{{ subnet_info.maxhosts }}
+                </div>
+                <div>
+                  <span class="bold-attribute">描述:</span>
+                  {{ subnet_info.desc }}
+                  <n-button text style="font-size: 20px" @click="change_desc()">
+                    <n-icon color="#0e7a0d">
+                      <cash-icon />
+                    </n-icon>
+                  </n-button>
+                </div>
+                <div>
+                  <!-- <span class="bold-attribute"></span> -->
+                  <n-button
+                    type="error"
+                    style="font-size: 20px"
+                    @click="delete_subnet()"
+                    size="tiny"
+                  >
+                    删除网段
+                  </n-button>
+                </div>
+              </div>
             </div>
-            <div>
-              <span class="bold-attribute">已使用:</span>
-              {{ subnet_info.used }}%
+          </n-gi>
+          <n-gi>
+            <div style="float: right; width: 100%">
+              <div ref="PieChart" class="chart-item"></div>
             </div>
-            <div>
-              <span class="bold-attribute">未使用:</span>
-              {{ subnet_info.freehosts }}%
-            </div>
-            <div>
-              <span class="bold-attribute">使用率:</span>
-              Used: {{ subnet_info.Used_percent }}% | Free: {{ subnet_info.freehosts_percent }}% |
-              Total:{{ subnet_info.maxhosts }}
-            </div>
-            <div>
-              <span class="bold-attribute">描述:</span>
-              {{ subnet_info.desc }}
-              <n-button text style="font-size: 20px" @click="change_desc()">
-                <n-icon>
-                  <cash-icon />
-                </n-icon>
-              </n-button>
-            </div>
-            <div>
-              <!-- <span class="bold-attribute"></span> -->
-              <n-button type="error" style="font-size: 20px" @click="delete_subnet()" size="tiny">
-                删除网段
-              </n-button>
-            </div>
-          </div>
-        </n-gi>
-        <n-gi>
-          <div style="float: right; width: 100%">
-            <!--        <n-skeleton text v-if="loading" :repeat="4" />-->
-            <!--        <template v-else>-->
-            <div ref="channelsChart" class="chart-item"></div>
-            <!--        </template>-->
-            <!--        <EnrollmentChannelsChart ref="enrollmentChannelsChart" />-->
-          </div>
-        </n-gi>
-      </n-grid>
+          </n-gi>
+        </n-grid>
+      </div>
+
       <n-space style="margin-bottom: 5px">
         <n-button size="small" @click="dispatch_ip" type="primary">分配</n-button>
         <n-button size="small" @click="dispatch_many_func" type="info">批量分配</n-button>
@@ -343,7 +355,7 @@
     useMessage,
     NIcon,
   } from 'naive-ui'
-  import { ChevronForward } from '@vicons/ionicons5'
+  import { FolderOpen, FolderOpenOutline } from '@vicons/ionicons5'
   import { DataFormType, ModalDialogType } from '@/types/components'
   import { useTableColumn } from '@/hooks/table'
   // import Cookies from 'js-cookie'
@@ -358,45 +370,41 @@
       // const roll = ref(null)
       const dialog = useDialog()
       const used_port = []
-      const channelsChart = ref<HTMLDivElement | null>(null)
+      const PieChart = ref<HTMLDivElement | null>(null)
       const button_roll = ref<HTMLDivElement | null>(null)
       const utilization_option = {
+        title: {
+          // text: '使用分布统计',
+          left: 'center',
+          subtext: '',
+          subtextStyle: {
+            color: '#13227a',
+            // fontWeight: 'bold',
+            fontSize: 20,
+          },
+          x: 'center', //文字位置
+          y: 'center', //文字位置
+        },
         tooltip: {
           trigger: 'item',
-          formatter: '分布<br/>{b}<br/>{c}',
+          formatter: '{b}数量<br/>{c}',
         },
-        legend: {
-          // top: '5%',
-          // orient: 'vertical',
-          left: 'center',
-        },
+        legend: {},
         series: [
           {
             name: '子网使用情况',
             type: 'pie',
-            // radius: ['50%', '70%'],
-            radius: '50%',
-            // center:['60%', '40%'],
+            radius: ['30%', '35%'],
             avoidLabelOverlap: false,
-            itemStyle: {
-              borderRadius: 10,
-              borderColor: '#fff',
-              borderWidth: 2,
-            },
             label: {
-              // show: false,
-              // position: 'center',
-              show: true, //由于默认是外部，所以这里没有写position:'outside'
-              color: '#dbba97',
-              fontSize: '10',
-              formatter: '{b}\n\n{c}%',
-              padding: [0, 0, 0, 0],
+              show: false,
+              position: 'right',
             },
             emphasis: {
               label: {
                 show: true,
-                fontSize: '10',
-                // fontWeight: 'bold'
+                fontSize: 10,
+                fontWeight: 'bold',
               },
             },
             labelLine: {
@@ -1025,33 +1033,65 @@
                   ////console.log('详细网段数据', res)
                   nextTick(() => {
                     utilization_option.series[0].data.length = 0
+
+                    utilization_option.title.subtext =
+                      res.subnet_used_count['total_count'] + '\n总数'
+                    // utilization_option.format
                     utilization_option.series[0].data.push({
-                      value: res.subnet_used['已分配已使用_percent'],
+                      value: res.subnet_used_count['dist_and_used_count'],
                       name: '已分配已使用',
                       itemStyle: { color: '#e6b600' },
                     })
                     utilization_option.series[0].data.push({
-                      value: res.subnet_used['未分配已使用_percent'],
+                      value: res.subnet_used_count['not_dist_used_count'],
                       name: '未分配已使用',
                       itemStyle: { color: '#1595c4' },
                     })
                     utilization_option.series[0].data.push({
-                      value:
-                        res.subnet_used['自定义空闲_percent'] + res.subnet_used['empty_percent'],
+                      value: Math.floor(
+                        res.subnet_used_count['self_empty_count'] + res.subnet_used['empty_percent']
+                      ),
                       name: '空闲IP',
                       itemStyle: { color: '#e9e9eb' },
                     })
                     utilization_option.series[0].data.push({
-                      value: res.subnet_used['已分配未使用_percent'],
+                      value: res.subnet_used_count['dist_not_used_count'],
                       name: '已分配未使用',
                       itemStyle: { color: '#11eec2' },
                     })
                     utilization_option.series[0].data.push({
-                      value: res.subnet_used['保留_percent'],
+                      value: res.subnet_used_count['reserved_count'],
                       name: '保留',
                       itemStyle: { color: '#22dd22' },
                     })
-                    useEcharts(channelsChart.value as HTMLDivElement).setOption(utilization_option)
+                    utilization_option.legend = {
+                      orient: 'vertical',
+                      left: 'right',
+                      top: '5%',
+                      // x: 'right', //水平安放位置，默认为'left'，可选为：'center' | 'left' | 'right' | {number}（x坐标，单位px）
+                      // y: 'center', //垂直安放位置，默认为top，可选为：'top' | 'bottom' | 'center' | {number}（y坐标，单位px）
+                      icon: 'circle', //  这个字段控制形状  类型包括 circle 圆形，triangle 三角形，diamond 四边形，arrow 变异三角形，none 无
+                      // itemWidth: 10, // 设置宽度
+                      // itemHeight: 10, // 设置高度
+                      // itemGap: 10, // 设置间距，
+                      formatter: function (name) {
+                        // console.log(data, 'data')
+                        let total = 0
+                        let tarValue
+                        for (let i = 0; i < utilization_option.series[0].data.length; i++) {
+                          total += utilization_option.series[0].data[i].value
+                          if (utilization_option.series[0].data[i].name == name) {
+                            tarValue = utilization_option.series[0].data[i].value
+                          }
+                        }
+                        let v = tarValue + '个'
+                        //计算出百分比
+                        let p = Math.round((tarValue / total) * 100) + '%'
+                        return `${name} ${p} ${v}`
+                        //name是名称，v是数值
+                      },
+                    }
+                    useEcharts(PieChart.value as HTMLDivElement).setOption(utilization_option)
                   })
                   var ip_used_list = []
                   if (res.ip_used) {
@@ -1101,35 +1141,65 @@
                     ////console.log('详细网段数据', res)
                     nextTick(() => {
                       utilization_option.series[0].data.length = 0
+                      utilization_option.title.subtext =
+                        res.subnet_used_count['total_count'] + '\n总数'
+                      // utilization_option.format
                       utilization_option.series[0].data.push({
-                        value: res.subnet_used['已分配已使用_percent'],
+                        value: res.subnet_used_count['dist_and_used_count'],
                         name: '已分配已使用',
                         itemStyle: { color: '#e6b600' },
                       })
                       utilization_option.series[0].data.push({
-                        value: res.subnet_used['未分配已使用_percent'],
+                        value: res.subnet_used_count['not_dist_used_count'],
                         name: '未分配已使用',
                         itemStyle: { color: '#1595c4' },
                       })
                       utilization_option.series[0].data.push({
-                        value:
-                          res.subnet_used['自定义空闲_percent'] + res.subnet_used['empty_percent'],
+                        value: Math.floor(
+                          res.subnet_used_count['self_empty_count'] +
+                            res.subnet_used['empty_percent']
+                        ),
                         name: '空闲IP',
                         itemStyle: { color: '#e9e9eb' },
                       })
                       utilization_option.series[0].data.push({
-                        value: res.subnet_used['已分配未使用_percent'],
+                        value: res.subnet_used_count['dist_not_used_count'],
                         name: '已分配未使用',
                         itemStyle: { color: '#11eec2' },
                       })
                       utilization_option.series[0].data.push({
-                        value: res.subnet_used['保留_percent'],
+                        value: res.subnet_used_count['reserved_count'],
                         name: '保留',
                         itemStyle: { color: '#22dd22' },
                       })
-                      useEcharts(channelsChart.value as HTMLDivElement).setOption(
-                        utilization_option
-                      )
+                      utilization_option.legend = {
+                        orient: 'vertical',
+                        left: 'right',
+                        top: '5%',
+                        // x: 'right', //水平安放位置，默认为'left'，可选为：'center' | 'left' | 'right' | {number}（x坐标，单位px）
+                        // y: 'center', //垂直安放位置，默认为top，可选为：'top' | 'bottom' | 'center' | {number}（y坐标，单位px）
+                        icon: 'circle', //  这个字段控制形状  类型包括 circle 圆形，triangle 三角形，diamond 四边形，arrow 变异三角形，none 无
+                        // itemWidth: 10, // 设置宽度
+                        // itemHeight: 10, // 设置高度
+                        // itemGap: 35, // 设置间距，
+                        formatter: function (name) {
+                          // console.log(data, 'data')
+                          let total = 0
+                          let tarValue
+                          for (let i = 0; i < utilization_option.series[0].data.length; i++) {
+                            total += utilization_option.series[0].data[i].value
+                            if (utilization_option.series[0].data[i].name == name) {
+                              tarValue = utilization_option.series[0].data[i].value
+                            }
+                          }
+                          let v = tarValue + '个'
+                          //计算出百分比
+                          let p = Math.round((tarValue / total) * 100) + '%'
+                          return `${name}  ${p}   ${v}`
+                          //name是名称，v是数值
+                        },
+                      }
+                      useEcharts(PieChart.value as HTMLDivElement).setOption(utilization_option)
                     })
                     var ip_used_list = []
                     if (res.ip_used) {
@@ -1162,7 +1232,7 @@
 
       function echarts_init() {
         nextTick(() => {
-          useEcharts(channelsChart.value as HTMLDivElement).setOption(utilization_option)
+          useEcharts(PieChart.value as HTMLDivElement).setOption(utilization_option)
         })
       }
 
@@ -1577,34 +1647,65 @@
             ////console.log('详细网段数据', res)
             nextTick(() => {
               subnet_tag_list.length = 0
+              // utilization_option.series[0].data.length = 0
               utilization_option.series[0].data.length = 0
-              // //console.log(res.subnet_used)
+              // utilization_option.format
+              utilization_option.title.subtext = res.subnet_used_count['total_count'] + '\n总数'
               utilization_option.series[0].data.push({
-                value: res.subnet_used['已分配已使用_percent'],
+                value: res.subnet_used_count['dist_and_used_count'],
                 name: '已分配已使用',
                 itemStyle: { color: '#e6b600' },
               })
               utilization_option.series[0].data.push({
-                value: res.subnet_used['未分配已使用_percent'],
+                value: res.subnet_used_count['not_dist_used_count'],
                 name: '未分配已使用',
                 itemStyle: { color: '#1595c4' },
               })
               utilization_option.series[0].data.push({
-                value: res.subnet_used['自定义空闲_percent'] + res.subnet_used['empty_percent'],
+                value: Math.floor(
+                  res.subnet_used_count['self_empty_count'] + res.subnet_used['empty_percent']
+                ),
                 name: '空闲IP',
                 itemStyle: { color: '#e9e9eb' },
               })
               utilization_option.series[0].data.push({
-                value: res.subnet_used['已分配未使用_percent'],
+                value: res.subnet_used_count['dist_not_used_count'],
                 name: '已分配未使用',
                 itemStyle: { color: '#11eec2' },
               })
               utilization_option.series[0].data.push({
-                value: res.subnet_used['保留_percent'],
+                value: res.subnet_used_count['reserved_count'],
                 name: '保留',
                 itemStyle: { color: '#22dd22' },
               })
-              useEcharts(channelsChart.value as HTMLDivElement).setOption(utilization_option)
+              utilization_option.legend = {
+                orient: 'vertical',
+                left: 'right',
+                top: '5%',
+                // x: 'right', //水平安放位置，默认为'left'，可选为：'center' | 'left' | 'right' | {number}（x坐标，单位px）
+                // y: 'center', //垂直安放位置，默认为top，可选为：'top' | 'bottom' | 'center' | {number}（y坐标，单位px）
+                icon: 'circle', //  这个字段控制形状  类型包括 circle 圆形，triangle 三角形，diamond 四边形，arrow 变异三角形，none 无
+                // itemWidth: 10, // 设置宽度
+                // itemHeight: 10, // 设置高度
+                // itemGap: 35, // 设置间距，
+                formatter: function (name) {
+                  // console.log(data, 'data')
+                  let total = 0
+                  let tarValue
+                  for (let i = 0; i < utilization_option.series[0].data.length; i++) {
+                    total += utilization_option.series[0].data[i].value
+                    if (utilization_option.series[0].data[i].name == name) {
+                      tarValue = utilization_option.series[0].data[i].value
+                    }
+                  }
+                  let v = tarValue + '个'
+                  //计算出百分比
+                  let p = Math.round((tarValue / total) * 100) + '%'
+                  return `${name}  ${p}   ${v}`
+                  //name是名称，v是数值
+                },
+              }
+              useEcharts(PieChart.value as HTMLDivElement).setOption(utilization_option)
             })
             subnet_info.value = {
               subnet: subnet_info.value['subnet'],
@@ -1746,9 +1847,10 @@
         change_desc_form.value['subnet_id'] = subnet_info.value['subnet_id']
         change_desc_form.value['description'] = subnet_info.value['desc']
       }
+
       function DeleteSubnetConfirm() {
         // console.log('删除网段id', subnet_info.value['subnet_id'])
-        deleteFunc({ url: getSubnetList + subnet_info.value['subnet_id'] +'/'}).then((res) => {
+        deleteFunc({ url: getSubnetList + subnet_info.value['subnet_id'] + '/' }).then((res) => {
           console.log(res)
           if (res.code == 204) {
             message.info('网段删除成功')
@@ -1759,6 +1861,7 @@
           dialog.destroyAll()
         })
       }
+
       function delete_subnet() {
         // console.log('删除网段id', subnet_info.value['subnet_id'])
         dialog.warning({
@@ -1793,6 +1896,7 @@
           // },
         })
       }
+
       function change_desc_submit() {
         const post_data = new FormData()
         post_data.append('subnet_id', change_desc_form.value['subnet_id'])
@@ -1906,7 +2010,7 @@
         tree_data,
         clear_keywords,
         utilization_option,
-        channelsChart,
+        PieChart,
         pattern,
         subnet_keyword,
         subnet_loading,
@@ -1928,7 +2032,10 @@
         button_roll,
         request_next_status,
         dispatch_rowKey,
-        renderSwitcherIcon: () => h(NIcon, null, { default: () => h(ChevronForward) }),
+        renderSwitcherIconWithExpaned: ({ expanded }: { expanded: boolean }) =>
+          h(NIcon, null, {
+            default: () => h(expanded ? FolderOpen : FolderOpenOutline),
+          }),
       }
     },
   })

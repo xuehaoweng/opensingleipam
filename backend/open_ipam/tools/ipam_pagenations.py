@@ -39,6 +39,15 @@ class HostsListPagination(pagination.BasePagination):
                     ('data', {'ip_used': data,
                               'sub_net': Subnet.objects.filter(subnet=data[0]['subnet']).values("name", "description",
                                                                                                 "id"),
+                              'subnet_used_count': {
+                                  'empty_count': len([i for i in data if i['tag'] == 1]),
+                                  'dist_and_used_count': len([i for i in data if i['tag'] == 2]),
+                                  'reserved_count':len([i for i in data if i['tag'] == 3]),
+                                  'not_dist_used_count':len([i for i in data if i['tag'] == 4]),
+                                  'dist_not_used_count':len([i for i in data if i['tag'] == 6]),
+                                  'self_empty_count':len([i for i in data if i['tag'] == 7]),
+                                  "total_count":len(data)
+                              },
                               'subnet_used': {
                                   'freehosts': round(100 - dist_and_used - not_dist_used, 2),
                                   'freehosts_percent': round(100 - dist_and_used - not_dist_used, 2),

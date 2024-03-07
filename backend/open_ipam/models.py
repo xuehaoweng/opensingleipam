@@ -292,6 +292,9 @@ class ApiKeyToken(models.Model):
     platform = models.CharField(max_length=40, verbose_name='api-key运用平台', default='netops')
     is_active = models.BooleanField(default=True, verbose_name='状态')
     lastGetTime = models.DateTimeField(blank=True, auto_now=True, null=True, verbose_name='最近查询时间')
+    expireTime = models.DateTimeField(blank=True, auto_now=True, null=True, verbose_name='key过期时间')
+    countTimes = models.IntegerField(blank=True, null=True, verbose_name='key使用次数')
+    serverIp = models.CharField(blank=True, null=True, verbose_name='key提供服务的IP或IP范围',max_length=100)
 
     def save(self, *args, **kwargs):
         if not self.key:
