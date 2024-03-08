@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import asyncio
+import concurrent
 
 import pandas as pd
 import json
@@ -70,7 +71,7 @@ def sync_ipam_ipaddress_main():
     sum_count = 0
     index_num = 0
     for subnet_instance in all_subnet:
-        index_num+=1
+        index_num += 1
         address_list = phpipamapi.get_address_by_subnet_instance(subnet_instance)
         logger.info(f"准备写入网段{subnet_instance['subnet']}下的地址,共计{len(address_list)}当前第{index_num}行网段")
         sum_count += len(address_list)
@@ -335,24 +336,50 @@ def ipam_update_task():
     # loop.run_until_complete(ip_am_update_main())
 
 
+import socket
+from ipaddress import IPv4Network
+from concurrent.futures import ThreadPoolExecutor
+
+
+def is_host_alive(ip, count=1, timeout=3):
+    response = os.system(f"ping -c {count} -W {timeout} {ip} > /dev/null 2>&1")
+    if response == 0:
+        print(f"{ip} is alive")
+    else:
+        print(f"{ip} is not alive")
+    return response == 0
+
+def scan_network(network, count=1, timeout=3):
+    ip_list = [str(ip) for ip in IPv4Network(network)]
+    alive_ips = []
+
+    for ip in ip_list:
+        if is_host_alive(ip, count, timeout):
+            alive_ips.append(ip)
+
+    return alive_ips
+
+
 # 根据前端传递的网段，进行网段下的地址迭代并添加
 def auto_scan_task(subnet):
     '''
     创建网段
     创建网段下的ip
     '''
-    add_kwargs = {
-        "name": subnet,
-        "mask": subnet.split("/")[1],
-        "subnet": subnet,
-        "description": f'auto_scan_' + subnet,
-        "master_subnet": master_subnet_id
-    }
-    ip_instance = IPNetwork(subnet)
-    ip_list = [i for i in ip_instance.iter_hosts()]
-    print(ip_list)
-    for ip in ip_list:
-        print(ip)
+    # add_kwargs = {
+    #     "name": subnet,
+    #     "mask": subnet.split("/")[1],
+    #     "subnet": subnet,
+    #     "description": f'auto_scan_' + subnet,
+    #     "master_subnet": master_subnet_id
+    # }
+    # ip_instance = IPNetwork(subnet)
+    # ip_list = [i for i in ip_instance.iter_hosts()]
+    # print(ip_list)
+    # for ip in ip_list:
+    #     print(ip)
+    alive_ips = scan_network(subnet)
+    print("Alive IPs:", alive_ips)
 
 
 # 定时回收地址

@@ -1618,13 +1618,18 @@
         post({
           url: PostAddressHandel, // TODO
           data: dispatch_data,
-        }).then(() => {
-          dispatch_modalDialog.value!.toggle()
-          message.success('分配成功')
-          nextTick(() => {
-            detail_show.value = false
-            refresh_subnet(refresh_subnet_id.value)
-          })
+        }).then((res) => {
+          console.log('地址分配res', res)
+          if (res.code == 200) {
+            dispatch_modalDialog.value!.toggle()
+            message.success('分配成功')
+            nextTick(() => {
+              detail_show.value = false
+              refresh_subnet(refresh_subnet_id.value)
+            })
+          } else {
+            message.error(`请检查可能的问题${res.message}`)
+          }
           // TODO
         })
       }

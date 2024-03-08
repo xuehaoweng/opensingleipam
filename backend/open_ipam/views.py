@@ -240,42 +240,64 @@ class IpAmHandelView(APIView):
         room_group_name = request.POST.get('room_group_name')
         auto_scan_subnet = request.POST.get('auto_scan_subnet')
         if update:
-            update_list = json.loads(update)
-            for update_info in update_list:
-                IpAddress.objects.update_or_create(ip_address=update_info['ipaddr'], tag=update_info['tag'],
-                                                   description=update_info['description'],
-                                                   subnet_id=update_info['subnet_id'])
-            res = {'message': '地址分配成功', 'code': 200, 'update_ip_list': [j['ipaddr'] for j in update_list]}
+            # 需要判断该地址原来状态是否自定义空闲的,自定义空闲的需要进行修改
+            try:
+                update_list = json.loads(update)
+                for update_info in update_list:
+                    ip_instance = IpAddress.objects.filter(ip_address=update_info['ipaddr']).first()
+                    print(ip_instance)
+                    if ip_instance and ip_instance.tag == 7:
+                        # 执行修改
+                        ip_instance.tag = update_info['tag']
+                        ip_instance.description = update_info['description']
+                        ip_instance.subnet_id = update_info['subnet_id']
+                        ip_instance.save()
+                    else:
+                        IpAddress.objects.update_or_create(ip_address=update_info['ipaddr'], tag=update_info['tag'],
+                                                           description=update_info['description'],
+                                                           subnet_id=update_info['subnet_id'])
+                res = {'message': '地址分配成功', 'code': 200, 'update_ip_list': [j['ipaddr'] for j in update_list]}
+            except Exception as e:
+                res = {'message': str(e), 'code': 400, }
             return JsonResponse(res, safe=True)
         if range_update:
-            range_data = json.loads(range_update)
-            print(range_data)
-            start_ip = range_data['start_ip']
-            end_ip = range_data['end_ip']
-            description = range_data['description']
-            subnet_id = range_data['subnet_id']
-            update_ip_list = []
-            for host_ip in iter_iprange(start_ip, end_ip):
-                # print(host_ip)
+            try:
+                range_data = json.loads(range_update)
+                print(range_data)
+                start_ip = range_data['start_ip']
+                end_ip = range_data['end_ip']
+                description = range_data['description']
+                subnet_id = range_data['subnet_id']
+                update_ip_list = []
+                for host_ip in iter_iprange(start_ip, end_ip):
+                    # print(host_ip)
 
-                IpAddress.objects.update_or_create(ip_address=str(host_ip), tag=range_data['tag'],
-                                                   description=description,
-                                                   subnet_id=subnet_id)
-                update_ip_list.append(str(host_ip))
+                    IpAddress.objects.update_or_create(ip_address=str(host_ip), tag=range_data['tag'],
+                                                       description=description,
+                                                       subnet_id=subnet_id)
+                    update_ip_list.append(str(host_ip))
 
-            res = {'message': '地址批量分配成功', 'code': 200, 'update_ip_list': update_ip_list}
+                res = {'message': '地址批量分配成功', 'code': 200, 'update_ip_list': update_ip_list}
+            except Exception as e:
+                res = {'message': str(e), 'code': 400, }
             return JsonResponse(res, safe=True)
         if delete:
-            delete_ip_list = json.loads(delete)
-            print(delete_ip_list)
-            for delete_info in delete_ip_list:
-                IpAddress.objects.filter(ip_address=delete_info['ipaddr']).delete()
-            res = {'message': '地址回收成功', 'code': 200, 'delete_ip_list': [j['ipaddr'] for j in delete_ip_list]}
+            try:
+                delete_ip_list = json.loads(delete)
+                print(delete_ip_list)
+                for delete_info in delete_ip_list:
+                    IpAddress.objects.filter(ip_address=delete_info['ipaddr']).delete()
+                res = {'message': '地址回收成功', 'code': 200, 'delete_ip_list': [j['ipaddr'] for j in delete_ip_list]}
+            except Exception as e:
+                res = {'message': str(e), 'code': 400, }
             return JsonResponse(res, safe=True)
 
         if description:
-            Subnet.objects.update(description=description)
-            res = {'message': '网段描述更新成功', 'code': 200, }
+            try:
+                Subnet.objects.update(description=description)
+                res = {'message': '网段描述更新成功', 'code': 200, }
+            except Exception as e:
+                res = {'message': str(e), 'code': 400, }
             return JsonResponse(res, safe=True)
 
         if add_subnet:
@@ -341,12 +363,15 @@ class IpAmHandelView(APIView):
                 return JsonResponse(res, safe=True)
 
         if auto_scan_subnet:
-            subnet_list = [str(i.subnet) for i in Subnet.objects.all()]
-            if auto_scan_subnet in subnet_list:
-                res = {'message': '当前网段已经存在,不执行扫描', 'code': 400, }
-            else:
-                auto_scan_task(auto_scan_subnet)
-                res = {'message': '网段扫描成功,新增网段{}成功添加{}个地址'.format('', 0), 'code': 200, }
+            try:
+                subnet_list = [str(i.subnet) for i in Subnet.objects.all()]
+                if auto_scan_subnet in subnet_list:
+                    res = {'message': '当前网段已经存在,不执行扫描', 'code': 400, }
+                else:
+                    auto_scan_task(auto_scan_subnet)
+                    res = {'message': '网段扫描成功,新增网段{}成功添加{}个地址'.format('', 0), 'code': 200, }
+            except Exception as e:
+                res = {'message': str(e), 'code': 400, }
             return JsonResponse(res, safe=True)
 
 
