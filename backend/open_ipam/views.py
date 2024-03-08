@@ -1,7 +1,8 @@
 import asyncio
 import json
+import threading
 import time
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from asgiref.sync import sync_to_async, async_to_sync
 from django.http import JsonResponse, HttpResponse
@@ -21,7 +22,7 @@ from open_ipam.models import Subnet, IpAddress, TagsModel, ApiKeyToken
 from open_ipam.serializers import HostsResponseSerializer, SubnetSerializer, IpAddressSerializer, \
     TagsModelSerializer
 from open_ipam.tasks import ip_am_update_main, ipam_update_task, query, recycle_ip_main, sync_ipam_subnet_main, \
-    sync_ipam_ipaddress_main, auto_scan_task
+    sync_ipam_ipaddress_main, auto_scan_task, get_subnet_address_count
 from open_ipam.tools.auth import ApiKeyAuthentication
 from open_ipam.tools.ipam_pagenations import HostsListPagination
 from utils.custom_pagination import LargeResultsSetPagination
@@ -368,8 +369,12 @@ class IpAmHandelView(APIView):
                 if auto_scan_subnet in subnet_list:
                     res = {'message': '当前网段已经存在,不执行扫描', 'code': 400, }
                 else:
-                    auto_scan_task(auto_scan_subnet)
-                    res = {'message': '网段扫描成功,新增网段{}成功添加{}个地址'.format('', 0), 'code': 200, }
+                    t = threading.Thread(target=auto_scan_task, args=(auto_scan_subnet,))
+                    # 启动线程
+                    t.start()
+                    ip_count = get_subnet_address_count(auto_scan_subnet)
+                    # auto_scan_task(auto_scan_subnet)
+                    res = {'message': '网段扫描成功,新增网段{}成功添加{}个地址'.format('', ip_count - 2), 'code': 200, }
             except Exception as e:
                 res = {'message': str(e), 'code': 400, }
             return JsonResponse(res, safe=True)
@@ -448,13 +453,13 @@ def check_api_key(func):
     auth_check = ApiKeyAuthentication()
 
     def wrap(view, request):
-        if request.headers['Authorization']:
+        if request.headers.get('Authorization', ''):
             if 'api-key' in request.headers['Authorization']:
                 auth_check.authenticate(request)
                 return func(view, request)
             else:
                 raise AuthenticationFailed('Invalid api-key header. No credentials provided.')
-        raise "Invalid Api key"
+        raise AuthenticationFailed('Invalid api-key header. No credentials provided.')
 
     return wrap
 
@@ -527,16 +532,38 @@ class IpamOpenAPI(APIView):
         platform = get_params.get('platform', 'netops')
         # 获取传参平台
         api_key_token.platform = platform
-        # 先查询平台是否有存活的key
+        # 先查询平台是否有存活的key且未过期
         platform_key = ApiKeyToken.objects.filter(platform=platform).first()
+        print('platform_key.expireTime', platform_key)
+        message = ''
         if platform_key:
-            # 更新记录时间
-            api_key_token.key = platform_key.key
-            api_key_token.lastGetTime = datetime.now()
+            if platform_key.expireTime > datetime.now():
+                # 更新记录时间
+                print('未过期则更新key使用get时间')
+                message = 'platform存在且未过期则更新key的使用get时间'
+                api_key_token.key = platform_key.key
+                api_key_token.lastGetTime = datetime.now()
+                api_key_token.expireTime = platform_key.expireTime
+                api_key_token.save()
+            else:
+                print('apikey过期更新key', datetime.now() + timedelta(hours=1))
+                message = 'platform存在但apikey过期更新key'
+                api_key_token.key = api_key_token.generate_key()
+                api_key_token.expireTime = datetime.now() + timedelta(hours=1)
+                api_key_token.save()
         else:
-            # 新增key
+            # 新增
+            print('platform不存在新增apikey', datetime.now() + timedelta(hours=1))
+            message = 'platform不存在新增apikey'
             api_key_token.key = api_key_token.generate_key()
-        api_key_token.save()
+            api_key_token.lastGetTime = datetime.now()
+            api_key_token.expireTime = datetime.now() + timedelta(hours=1)
+            api_key_token.save()
         # 返回响应
-        res = {'api-key': api_key_token.key, 'platform': api_key_token.platform, 'code': 200, 'results': 'success'}
+        res = {'api-key': api_key_token.key,
+               'platform': api_key_token.platform,
+               'code': 200,
+               'results': 'success',
+               'message': message,
+               'expireTime': api_key_token.expireTime}
         return JsonResponse(res, safe=True)

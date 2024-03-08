@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import asyncio
 import concurrent
+import ipaddress
 
 import pandas as pd
 import json
@@ -352,14 +353,17 @@ def is_host_alive(ip, count=1, timeout=3):
 def scan_network(network, count=1, timeout=3):
     ip_list = [str(ip) for ip in IPv4Network(network)]
     alive_ips = []
-
+    not_alive_ips = []
     for ip in ip_list:
         if is_host_alive(ip, count, timeout):
             alive_ips.append(ip)
-
+        else:
+            not_alive_ips.append(ip)
     return alive_ips
 
-
+def get_subnet_address_count(subnet):
+    ip_network = ipaddress.ip_network(subnet)
+    return ip_network.num_addresses
 # 根据前端传递的网段，进行网段下的地址迭代并添加
 def auto_scan_task(subnet):
     '''
