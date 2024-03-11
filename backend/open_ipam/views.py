@@ -542,11 +542,15 @@ class IpamOpenAPI(APIView):
                 # 更新记录时间
                 print('未过期则更新key使用get时间')
                 message = 'platform存在且未过期则更新key的使用get时间'
-                api_key_token.key = platform_key_instance.key
-                api_key_token.lastGetTime = datetime.now()
-                api_key_token.expireTime = platform_key_instance.expireTime
-                api_key_token.save()
-
+                platform_key_queryset.update(key=platform_key_instance.key, expireTime=platform_key_instance.expireTime,
+                                             lastGetTime=datetime.now())
+                res = {'api-key': platform_key_instance.key,
+                       'platform': platform,
+                       'code': 200,
+                       'results': 'success',
+                       'message': message,
+                       'expireTime': platform_key_instance.expireTime}
+                return JsonResponse(res, safe=True)
             else:
                 print('apikey过期更新key', datetime.now() + timedelta(hours=1))
                 message = 'platform存在但apikey过期更新key'
