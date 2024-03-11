@@ -2,7 +2,6 @@
 import asyncio
 import concurrent
 import ipaddress
-import threading
 
 import pandas as pd
 import json
@@ -77,11 +76,7 @@ def sync_ipam_ipaddress_main():
         address_list = phpipamapi.get_address_by_subnet_instance(subnet_instance)
         logger.info(f"准备写入网段{subnet_instance['subnet']}下的地址,共计{len(address_list)}当前第{index_num}行网段")
         sum_count += len(address_list)
-        # ipam_scan(address_list)
-        t = threading.Thread(target=ipam_scan, args=(address_list,))
-        # 启动线程
-        t.start()
-
+        ipam_scan(address_list)
     logger.info(f'总计写入地址数目{sum_count}')
     end_time = time.time()
     total_time = int(end_time - start_time)

@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from rest_framework.authentication import TokenAuthentication, get_authorization_header
 from rest_framework.exceptions import AuthenticationFailed
 
@@ -36,10 +38,11 @@ class ApiKeyAuthentication(TokenAuthentication):
         try:
             token = ApiKeyToken.objects.get(key=key)
         except ApiKeyToken.DoesNotExist:
-            raise AuthenticationFailed('Invalid Api key.')
+            raise AuthenticationFailed(code=403, detail='Invalid Api key.')
 
         if not token.is_active:
-            raise AuthenticationFailed('Api key inactive or deleted.')
-
+            raise AuthenticationFailed(code=403, detail='Api key inactive or deleted.')
+        if token.expireTime < datetime.now():
+            raise AuthenticationFailed(code=401, detail='Api key is expired')
         # user = token.company.users.first()  # what ever you want here
         return token
