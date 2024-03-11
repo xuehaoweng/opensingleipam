@@ -532,26 +532,34 @@ class IpamOpenAPI(APIView):
         api_key_token = ApiKeyToken()
         platform = get_params.get('platform', 'netops')
         # 获取传参平台
-        api_key_token.platform = platform
+        # api_key_token.platform = platform
         # 先查询平台是否有存活的key且未过期
-        platform_key = ApiKeyToken.objects.filter(platform=platform).first()
-        print('platform_key.expireTime', platform_key)
-        message = ''
-        if platform_key:
-            if platform_key.expireTime > datetime.now():
+        platform_key_queryset = ApiKeyToken.objects.filter(platform=platform)
+        print('platform_key_queryset.expireTime', platform_key_queryset)
+        platform_key_instance = platform_key_queryset.first()
+        if platform_key_queryset:
+            if platform_key_instance.expireTime > datetime.now():
                 # 更新记录时间
                 print('未过期则更新key使用get时间')
                 message = 'platform存在且未过期则更新key的使用get时间'
-                api_key_token.key = platform_key.key
+                api_key_token.key = platform_key_instance.key
                 api_key_token.lastGetTime = datetime.now()
-                api_key_token.expireTime = platform_key.expireTime
+                api_key_token.expireTime = platform_key_instance.expireTime
                 api_key_token.save()
+
             else:
                 print('apikey过期更新key', datetime.now() + timedelta(hours=1))
                 message = 'platform存在但apikey过期更新key'
-                api_key_token.key = api_key_token.generate_key()
-                api_key_token.expireTime = datetime.now() + timedelta(hours=1)
-                api_key_token.save()
+                new_key = api_key_token.generate_key()
+                new_expire_time = datetime.now() + timedelta(hours=1)
+                platform_key_queryset.update(key=new_key, expireTime=new_expire_time)
+                res = {'api-key': new_key,
+                       'platform': platform,
+                       'code': 200,
+                       'results': 'success',
+                       'message': message,
+                       'expireTime': new_expire_time}
+                return JsonResponse(res, safe=True)
         else:
             # 新增
             print('platform不存在新增apikey', datetime.now() + timedelta(hours=1))
@@ -562,7 +570,7 @@ class IpamOpenAPI(APIView):
             api_key_token.save()
         # 返回响应
         res = {'api-key': api_key_token.key,
-               'platform': api_key_token.platform,
+               'platform': platform,
                'code': 200,
                'results': 'success',
                'message': message,
