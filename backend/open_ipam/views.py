@@ -369,6 +369,7 @@ class IpAmHandelView(APIView):
                 if auto_scan_subnet in subnet_list:
                     res = {'message': '当前网段已经存在,不执行扫描', 'code': 400, }
                 else:
+                    # 需要先查询有没有父级网段-有父级网段则关联父级网段进行网段和地址新增、否则则进行网段新增和归属当前网段的地址新增
                     t = threading.Thread(target=auto_scan_task, args=(auto_scan_subnet,))
                     # 启动线程
                     t.start()

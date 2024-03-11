@@ -2,6 +2,7 @@
 import asyncio
 import concurrent
 import ipaddress
+import threading
 
 import pandas as pd
 import json
@@ -76,7 +77,11 @@ def sync_ipam_ipaddress_main():
         address_list = phpipamapi.get_address_by_subnet_instance(subnet_instance)
         logger.info(f"准备写入网段{subnet_instance['subnet']}下的地址,共计{len(address_list)}当前第{index_num}行网段")
         sum_count += len(address_list)
-        ipam_scan(address_list)
+        # ipam_scan(address_list)
+        t = threading.Thread(target=ipam_scan, args=(address_list,))
+        # 启动线程
+        t.start()
+
     logger.info(f'总计写入地址数目{sum_count}')
     end_time = time.time()
     total_time = int(end_time - start_time)
@@ -350,6 +355,7 @@ def is_host_alive(ip, count=1, timeout=3):
         print(f"{ip} is not alive")
     return response == 0
 
+
 def scan_network(network, count=1, timeout=3):
     ip_list = [str(ip) for ip in IPv4Network(network)]
     alive_ips = []
@@ -359,11 +365,14 @@ def scan_network(network, count=1, timeout=3):
             alive_ips.append(ip)
         else:
             not_alive_ips.append(ip)
-    return alive_ips
+    return alive_ips, not_alive_ips
+
 
 def get_subnet_address_count(subnet):
     ip_network = ipaddress.ip_network(subnet)
     return ip_network.num_addresses
+
+
 # 根据前端传递的网段，进行网段下的地址迭代并添加
 def auto_scan_task(subnet):
     '''
@@ -382,8 +391,9 @@ def auto_scan_task(subnet):
     # print(ip_list)
     # for ip in ip_list:
     #     print(ip)
-    alive_ips = scan_network(subnet)
+    alive_ips, not_alive_ips = scan_network(subnet)
     print("Alive IPs:", alive_ips)
+    print('not_alive_ips', not_alive_ips)
 
 
 # 定时回收地址
