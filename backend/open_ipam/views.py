@@ -566,17 +566,18 @@ class IpamOpenAPI(APIView):
                 return JsonResponse(res, safe=True)
         else:
             # 新增
-            print('platform不存在新增apikey', datetime.now() + timedelta(hours=1))
+            print('platform不存在新增apikey',platform, datetime.now() + timedelta(hours=1))
             message = 'platform不存在新增apikey'
+            api_key_token.platform = platform
             api_key_token.key = api_key_token.generate_key()
             api_key_token.lastGetTime = datetime.now()
             api_key_token.expireTime = datetime.now() + timedelta(hours=1)
             api_key_token.save()
-        # 返回响应
-        res = {'api-key': api_key_token.key,
-               'platform': platform,
-               'code': 200,
-               'results': 'success',
-               'message': message,
-               'expireTime': api_key_token.expireTime}
-        return JsonResponse(res, safe=True)
+            # 返回响应
+            res = {'api-key': api_key_token.key,
+                   'platform': platform,
+                   'code': 200,
+                   'results': 'success',
+                   'message': message,
+                   'expireTime': api_key_token.expireTime}
+            return JsonResponse(res, safe=True)
