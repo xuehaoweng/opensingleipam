@@ -1049,7 +1049,7 @@
                     })
                     utilization_option.series[0].data.push({
                       value: Math.floor(
-                        res.subnet_used_count['self_empty_count'] + res.subnet_used['empty_percent']
+                        res.subnet_used_count['self_empty_count'] + res.subnet_used_count['empty_count']
                       ),
                       name: '空闲IP',
                       itemStyle: { color: '#e9e9eb' },
@@ -1118,8 +1118,9 @@
               })
             } else {
               // message.info('当前选中最后一层元素做查询' + option.label)
+              // console.log(option)
               if (option.children) {
-                ////console.log('还有子元素不做查询', option)
+                // console.log('还有子元素不做查询', option)
                 detail_show.value = false
                 add_subnet_form.value.master_subnet_id = option.label + '-' + option.id
                 return
@@ -1157,7 +1158,7 @@
                       utilization_option.series[0].data.push({
                         value: Math.floor(
                           res.subnet_used_count['self_empty_count'] +
-                            res.subnet_used['empty_percent']
+                            res.subnet_used_count['empty_count']
                         ),
                         name: '空闲IP',
                         itemStyle: { color: '#e9e9eb' },
@@ -1172,6 +1173,7 @@
                         name: '保留',
                         itemStyle: { color: '#22dd22' },
                       })
+                      console.log(utilization_option.series[0])
                       utilization_option.legend = {
                         orient: 'vertical',
                         left: 'right',
@@ -1668,7 +1670,7 @@
               })
               utilization_option.series[0].data.push({
                 value: Math.floor(
-                  res.subnet_used_count['self_empty_count'] + res.subnet_used['empty_percent']
+                  res.subnet_used_count['self_empty_count'] + res.subnet_used_count['empty_count']
                 ),
                 name: '空闲IP',
                 itemStyle: { color: '#e9e9eb' },

@@ -100,125 +100,26 @@ class IpAmForNetwork(object):
         '''
         res_list = some_subnets
         res_list_cp = res_list.copy()
-        # print(res_list)
-        no1_id_list = []  # 存放第一层子网的ipam_id
-        no1_list = []  # 存放第一层子网的详细信息
-        no2_id_list = []
-        no2_list = []
-        no3_id_list = []
-        no3_list = []
-        no4_id_list = []
-        no5_id_list = []
-        no6_id_list = []
-        no4_list = []
-        no5_list = []
-        no6_list = []
+        subnet_dict = {}  # 存放每个子网的详细信息
+        root_subnets = []  # 存放根子网
 
         for e in res_list:
-            # master_subnet_id为空--一级结构
             if e['master_subnet_id'] is None:
-                no1_id_list.append(e['id'])
-                tmp = {}
-                tmp['id'] = e['id']
-                tmp['master_subnet_id'] = e['master_subnet_id']
-                tmp['network_type'] = e['network_type']
-                tmp['label'] = str(e['subnet'])
-                tmp['children'] = []
-                no1_list.append(tmp)
+                subnet_dict[e['id']] = {'id': e['id'], 'master_subnet_id': e['master_subnet_id'],
+                                        'network_type': e['network_type'], 'label': str(e['subnet']), 'children': []}
+                root_subnets.append(e['id'])
                 res_list_cp.remove(e)
 
-        # print(len(no1_id_list), len(res_list_cp))
-        # print(no1_id_list)
+        while res_list_cp:
+            for subnet in res_list:
+                if subnet['master_subnet_id'] in subnet_dict:
+                    subnet_dict[subnet['id']] = {'id': subnet['id'], 'master_subnet_id': subnet['master_subnet_id'],
+                                                 'network_type': subnet['network_type'], 'label': str(subnet['subnet']),
+                                                 'children': []}
+                    subnet_dict[subnet['master_subnet_id']]['children'].append(subnet_dict[subnet['id']])
+                    res_list_cp.remove(subnet)
 
-        for second in res_list:
-            if second['master_subnet_id'] in no1_id_list:
-                no2_id_list.append(second['id'])
-                tmp = {}
-                tmp['id'] = second['id']
-                tmp['master_subnet_id'] = second['master_subnet_id']
-                tmp['network_type'] = second['network_type']
-                tmp['label'] = str(second['subnet'])
-                tmp['children'] = []
-                no2_list.append(tmp)
-                res_list_cp.remove(second)
-
-        # print(len(no2_id_list), len(res_list_cp))
-
-        for third in res_list:
-            if third['master_subnet_id'] in no2_id_list:
-                no3_id_list.append(third['id'])
-                tmp = {}
-                tmp['id'] = third['id']
-                tmp['master_subnet_id'] = third['master_subnet_id']
-                tmp['network_type'] = third['network_type']
-                tmp['label'] = str(third['subnet'])
-                tmp['children'] = []
-                no3_list.append(tmp)
-                res_list_cp.remove(third)
-
-        # print(len(no3_id_list), len(res_list_cp))
-
-        for four in res_list:
-            if four['master_subnet_id'] in no3_id_list:
-                no4_id_list.append(four['id'])
-                tmp = {}
-                tmp['id'] = four['id']
-                tmp['master_subnet_id'] = four['master_subnet_id']
-                tmp['network_type'] = four['network_type']
-                tmp['label'] = str(four['subnet'])
-                tmp['children'] = []
-                no4_list.append(tmp)
-                res_list_cp.remove(four)
-        for five in res_list:
-            if five['master_subnet_id'] in no4_id_list:
-                no5_id_list.append(five['id'])
-                tmp = {}
-                tmp['id'] = five['id']
-                tmp['master_subnet_id'] = five['master_subnet_id']
-                tmp['network_type'] = five['network_type']
-                tmp['label'] = str(five['subnet'])
-                tmp['children'] = []
-                no5_list.append(tmp)
-                res_list_cp.remove(five)
-
-        for six in res_list:
-            if six['master_subnet_id'] in no5_id_list:
-                no6_id_list.append(six['id'])
-                tmp = {}
-                tmp['id'] = six['id']
-                tmp['master_subnet_id'] = six['master_subnet_id']
-                tmp['network_type'] = six['network_type']
-                tmp['label'] = str(six['subnet'])
-                tmp['children'] = []
-                no6_list.append(tmp)
-                res_list_cp.remove(six)
-        # print(len(no4_id_list), len(res_list_cp))
-        for i in no5_list:
-            for j in no6_list:
-                if j["master_subnet_id"] == i["id"]:
-                    i['children'].append(j)
-        for i in no4_list:
-            for j in no5_list:
-                if j["master_subnet_id"] == i["id"]:
-                    i['children'].append(j)
-        for i in no3_list:
-            for j in no4_list:
-                if j["master_subnet_id"] == i["id"]:
-                    i['children'].append(j)
-
-        for i in no2_list:
-            for j in no3_list:
-                if j["master_subnet_id"] == i["id"]:
-                    i['children'].append(j)
-
-        for i in no1_list:
-            for j in no2_list:
-                if j["master_subnet_id"] == i["id"]:
-                    i['children'].append(j)
-
-        # no1_list = sorted(no1_list, key=lambda e: e['id'], reverse=False)
-
-        return no1_list
+        return [subnet_dict[root_subnet] for root_subnet in root_subnets]
 
     # 根据给定的一系列子网信息，自动生成树-2022.05.31 TODO:结果是dict结构
     def build_tree_recursive(self, node_list, parent=None):
