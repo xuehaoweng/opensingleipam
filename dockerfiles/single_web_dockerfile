@@ -7,7 +7,7 @@ COPY web/ .
 RUN npm run build
 
 # production stage
-FROM nginx:1.23.1 as production-stage
+FROM FROM nginx:stable-alpine3.17-slim as production-stage
 COPY nginx/single_web_nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=build-stage /app/dist /app
 EXPOSE 80
