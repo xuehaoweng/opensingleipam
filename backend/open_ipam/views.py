@@ -370,6 +370,17 @@ class IpAmHandelView(APIView):
                     res = {'message': '当前网段已经存在,不执行扫描', 'code': 400, }
                 else:
                     # 需要先查询有没有父级网段-有父级网段则关联父级网段进行网段和地址新增、否则则进行网段新增和归属当前网段的地址新增
+                    """
+                    多线程确实可以实现异步操作，但这种异步性在执行CPU密集型任务时受到全局解释器锁（GIL）的限制。
+                    GIL是一个互斥锁，用于防止多个线程同时执行Python字节码。
+                    这意味着即使在多核处理器上，一个Python进程中的多个线程在任何时刻也只有一个可以执行Python代码。
+                    因此，对于CPU密集型任务，GIL实际上阻止了线程之间的并行执行，从而限制了多线程提高程序运行效率的能力。
+                    然而，对于I/O密集型任务，如文件读写、网络操作等，GIL的影响就相对较小。
+                    这是因为在执行这些操作时，线程可以释放GIL，从而允许其他线程运行。这就是为什么在I/O密集型场景下，使用多线程仍然可以提高程序的性能。
+                    auto_scan_task任务的描述，它主要是发送和接收网络数据包，这些操作主要是等待网络I/O的完成，而不是进行大量的计算。
+                    因此，我们可以合理推断auto_scan_task是一个I/O密集型任务。
+                    在执行过程中，大部分时间可能会花在等待网络I/O操作上，如等待ping请求的回应，而不是在执行计算密集的操作
+                    """
                     t = threading.Thread(target=auto_scan_task, args=(auto_scan_subnet,))
                     # 启动线程
                     t.start()
@@ -566,7 +577,7 @@ class IpamOpenAPI(APIView):
                 return JsonResponse(res, safe=True)
         else:
             # 新增
-            print('platform不存在新增apikey',platform, datetime.now() + timedelta(hours=1))
+            print('platform不存在新增apikey', platform, datetime.now() + timedelta(hours=1))
             message = 'platform不存在新增apikey'
             api_key_token.platform = platform
             api_key_token.key = api_key_token.generate_key()
