@@ -12,8 +12,7 @@ RUN set -ex \
     && pip install setuptools_scm==7.1.0 -i https://mirrors.aliyun.com/pypi/simple/ \
     && pip install --upgrade pip setuptools==57.5.0 -i https://mirrors.aliyun.com/pypi/simple/ \
     && pip install -r requirements.txt -i https://mirrors.aliyun.com/pypi/simple/ \
-    && rm -rf /var/cache/apk/* \
-    && python manage.py collectstatic --noinput
+    && rm -rf /var/cache/apk/*
 
 
 EXPOSE 8000
