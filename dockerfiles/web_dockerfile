@@ -1,4 +1,4 @@
-FROM node:16.13.1 as build-stage
+FROM node:lts-alpine3.19 as build-stage
 WORKDIR /app
 COPY web/package*.json ./
 RUN npm config set registry https://depend.iflytek.com/artifactory/api/npm/npm-repo
